@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "UberClone Conductor",
+    "slug": "uberclone-conductor",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single"
+    },
+    "plugins": [
+      "@react-native-vector-icons/ionicons"
+    ]
+  }
+}
