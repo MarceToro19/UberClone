@@ -1,0 +1,92 @@
+
+0 minutos 6 segundos
+Vamos a eso rápido y sin dolor, listo. ¿Entonces ya ustedes vieron ya la cree en la clase anterior? Muchachos les mostré que íbamos a utilizar una API pública listo al utilizar esta API pública. Una de las ventajas que tenía era que no necesitaba llave.
+0:35
+0 minutos 35 segundos
+Pues una llave de acceso y es de es gratuita. Listo, esa API me va a devolver, o sea sus peticiones me las va a devolver en formato tipo Jason. Listo, dudas, hasta ahí ninguna. Entonces cuando 1 esta con lo de las APIS, por lo general vamos a crear una constante.
+1:05
+1 minuto 5 segundos
+¿Que se llama base u R l o la pueden llamar también como UR L a API, como ustedes la quieran llamar listo una vez ustedes la creen? Vamos a llamar esa API. Acá tengo el ejemplo.
+1:38
+1 minuto 38 segundos
+La pueden probar, se cambia de luz, los va a dejar ciegos un día de estos listo. ¿Ves, ves? Ah, ponerme cuidado de vez en cuando. 403, Ah.
+2:08
+2 minutos 8 segundos
+¿No estudio en vergüenza, qué vergüenza, listo entonces?
+2:28
+2 minutos 28 segundos
+Yo la voy a hacer de todas maneras, pero cuando ustedes la aprueben en su casa con esta URL, ella les va a traer acá todas las recetas que ella tiene en formato tipo Jason, listo, entonces ahí no hay ningún problema. No somos 181817 y medio.
+3:05
+3 minutos 5 segundos
+¿No listo, ya entonces traemos ahí la la URL la pueden dejar en esa partecita dentro del proyecto final ustedes van a tener ya contaron cuántas APIS van a consumir más o menos?
+3:29
+3 minutos 29 segundos
+Son entre 6 a 8 APIS. ¿Entonces ustedes van a tomar la decisión si las dejan todas en un solo archivo o si las empiezan a separar por archivo listo profe, cómo? Así que separar por archivo. Ejemplo, ustedes tienen una API que es la geolocalización, entonces la API para geolocalización API listo. Hay otra API que trabaja con esa que se llama Matrix.
+3:54
+3 minutos 54 segundos
+Que es la que hace como la matriz y los puntos cardinales, cierto, como si fuera una matriz. ¿Entonces ustedes pueden o toma la decisión si unen esas dos APIS dentro de un mismo archivo o se hacen separados? ¿Quiero ver su mejor análisis, listo con la I así, qué más podemos hacer, señor? Sí.
+4:27
+4 minutos 27 segundos
+Ay hijo de su madre, Ah, qué tristes ahorita revisamos nuevamente listo, entonces voy a crear ahora un método porque es que de todas maneras tú estás usando esta red de acá.
+4:51
+4 minutos 51 segundos
+¿Pero de todas maneras tienes que pasar por acá, te la bloquea, no? Pero la conexión podrías de todas maneras la va a bloquear porque tiene que pasar por el Firefox, pero otra vez la cual está haciendo las peticiones por el.
+43:28
+43 minutos 28 segundos
+Exacto, acá el signo, pero cuando yo ya doy enter mandé la petición de una y hay hay una API que hace eso, o sea, es cuando y empieza a filtrar. Entonces, por ejemplo, digamos videojuegos, entonces ustedes colocan MY ella empieza a filtrar todos los videojuegos por m hasta que muy parecido a lo que hace Netflix, que es la de la película que ella empieza como a.
+43:53
+43 minutos 53 segundos
+Las iniciales, pero si usted la película Digamos está ahí registrada en inglés y usted la busca en español, ella no es capaz de hacer esa relación entonces 1 la debe buscar con el nombre exacto, sí, pero tienes que consumir la piel ahí a listo igual para consumir la piel ahí ya la tienes que integrar. Entonces primero hay que revisar si necesitamos una API o 1 s, D, K.
+44:35
+44 minutos 35 segundos
+Es cuando ya lo integras. Sí, no, acá no tengo nada más. O sea, esto es la marquetería, los temas, los services, que estos son los únicos que yo les dije que me interesaba. ¿Acaba de quedar el screen la configuración? Sí, porque exacto.
+45:05
+45 minutos 5 segundos
+¿Cuál es, Ah, esta no? Esa toca hacer la manual sí, y esa esta. Ese lo trajo el proyecto. ¿Sí, se te olvidó cómo es? Sí, pero recuerde que cuando yo estoy aquí en terminal nueva terminal y yo le colocó tan tan, tan, tan, tan esta.
+45:31
+45 minutos 31 segundos
+O sea, mira que yo al final le coloqué Template blanco, entonces él crea estas carpetas, es decir esta esta y de aquí para abajo listo, pero esta es ser no la crea, esa la creamos nosotros listo, pero si tú no le pones esta instrucción, sino que le das hasta acá, él crea otras carpetas, pero él crea el proyecto en Thigh Script.
+46:02
+46 minutos 2 segundos
+Es cuando ya lo crean en Timescript. Aquí hay más carpetas y hay una separación entre lo que es de Android y lo que es de iOS. ¿Y ahí es donde ustedes se enredan porque ya no queda esta a p p que es el archivo principal o el parecido al mail tan accesible? ¿Qué fue lo que hicimos en la clase pasada? Creé esas carpetas normal, vacías.
+46:29
+46 minutos 29 segundos
+Todas están vacías a excepción de la configuración. Recuerda la configuración, tienes lo de fire y lo de los servicios acá para la base de datos y la API. ¿Qué les dije yo? ¿Yo les pasaba lo que era el componente y los screen, ustedes qué hacían la navegación ya y obviamente tienen que hacer este que es del APP en donde ustedes pues llaman ya el resto ya ponen todo, pero eso lo pueden hacer ustedes?
+46:56
+46 minutos 56 segundos
+Pero yo no quiero hacer ese proyecto, solo quiero tomar notas, o sea yo lo coloco, es bueno 1 hacer ese proyecto para que cuando ustedes vayan a hacer el taller de la del viernes ya tengan una base, o sea porque si tú no lo has hecho te vas a demorar más de 2 horas. Cierto dudas, preguntas.
+47:26
+47 minutos 26 segundos
+¿Dudas? Muchas. Necesito que me digan cuáles son esas dudas para ir resolviéndolas. Ah, bueno, también no San llega y se sienta, empieza ya listo, muchachos.
+47:54
+47 minutos 54 segundos
+Digamos ustedes tienen una API que vamos a decir esta API no sabemos el ID de una receta, es un ejemplo listo. Usted también lo puede hacer no por búsqueda por texto, sino búsqueda por ID. Es exactamente lo mismo, listo, no va a cambiar nada. Ah, bueno, que cambia esta última variable de acá.
+48:20
+48 minutos 20 segundos
+Que dependiendo de cómo esté configurado, porque por ejemplo acá está buscando por texto, hay una variable que debe buscar por ID, es decir, un número. Entonces es el único que acá 1 debería de cambiar, cuando es por I d 1 no debe de mandar en codeado listo, esa es la única diferencia. Cuando mando el texto lo mando en codeado, cuando es con ID no se manda en codeado.
+48:46
+48 minutos 46 segundos
+Porque un número es cualquier cosa, puede ser 1 I d 1 célula, un teléfono. No sé qué. Entonces es difícil saber un consecutivo, pero el texto sí hay que, o sea, dudas, hasta ahí o K entonces vamos a prender la luz, ojo con sus ojos.
+49:28
+49 minutos 28 segundos
+¿Todos estamos de acuerdo con eso, compa? La próxima semana no hay clase, pero el viernes se deshabilita el desarrollo del taller 2 horas para que lo realicen, lo suban de viento. ¿El tele a qué más sí?
+50:02
+50 minutos 2 segundos
+50:19
+50 minutos 19 segundos
+Ajá. ¿La otra nota que que falta va a hacer la mitad del proyecto, que es la final? Sí, sí. O sea, con la otra nota que ya no tiene que otro cuatro, si la el viernes que ya la cubrimos con esto sí, la segunda, que vendría a ser la mitad del proyecto, el avance, el avance del proyecto que ya va el último y el.
+50:45
+50 minutos 45 segundos
+¿Qué pasa si no presentan avance del proyecto, es decir, un 28% de califica?
+51:14
+51 minutos 14 segundos
+Y al final parcial. Cómo quedó elección múltiple y a a veces me de Diosito y ya lo acompaño. Ni abiertas ni pues a si tienen ahí código, ustedes revisan y a veces hoy que no estudie.
+51:47
+51 minutos 47 segundos
+O sea, ustedes para ese.
+52:12
+52 minutos 12 segundos
+Cuando lleguen a la nota del final, ustedes si les va bien, tendrían que safar en el parcial 125 le duele mucho 16 se tienen que esforzar mucho en el parcial, pero si usted se tiene que esforzar para sacar 1 3 o 1, 4 en el parcial, estudie.
+52:41
+52 minutos 41 segundos
+¿Listo? Ahora llamemos a lista para hacer las últimas las últimas cancelaciones, sí, por así decirlo, pero si yo estaba grabando, o sea, me detuviste mi grabación, hijo de su madre.
