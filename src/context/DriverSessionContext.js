@@ -1,4 +1,4 @@
-// AI-assisted: see docs/AI_LOG.md #2
+
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import useAlmacenamiento from '../hooks/useAlmacenamiento';
 import { DRIVER_STATUS } from '../config/pricing';

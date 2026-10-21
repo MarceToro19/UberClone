@@ -1,52 +1,79 @@
-// AI-assisted: see docs/AI_LOG.md #3
+// AI-assisted: see docs/AI_LOG.md #4
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { DriverSessionProvider, useDriverSession } from './src/context/DriverSessionContext';
 import RegisterTabsScreen from './src/screens/register/RegisterTabsScreen';
 import PendingApprovalScreen from './src/screens/register/PendingApprovalScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import { colors, spacing, radius } from './src/theme';
 
 function AppContent() {
-  const { isRegistered, driverProfile } = useDriverSession();
-  const [viewMode, setViewMode] = React.useState('auto'); // 'auto' | 'force_register' | 'force_status'
+  const insets = useSafeAreaInsets();
+  const { isRegistered, isApproved } = useDriverSession();
+  const [currentView, setCurrentView] = React.useState('auto'); 
+  // 'auto' | 'register' | 'pending' | 'home'
 
-  // Si no está registrado va a RegisterTabsScreen; si ya se registró va a PendingApprovalScreen
-  const showRegister = viewMode === 'force_register' || (viewMode === 'auto' && !isRegistered);
+  // Determinación de la pantalla a mostrar
+  let activeScreen = 'register';
+  if (currentView === 'auto') {
+    if (!isRegistered) {
+      activeScreen = 'register';
+    } else if (!isApproved) {
+      activeScreen = 'pending';
+    } else {
+      activeScreen = 'home';
+    }
+  } else {
+    activeScreen = currentView;
+  }
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Selector superior para navegar fácilmente entre las vistas de prueba */}
-      <View style={styles.debugBar}>
+      {/* Barra de navegación de desarrollo protegida con Safe Area */}
+      <View style={[styles.navBar, { paddingTop: Math.max(insets.top, 16) + spacing.xs }]}>
         <TouchableOpacity
-          style={[styles.debugTab, showRegister && styles.debugTabActive]}
-          onPress={() => setViewMode('force_register')}
+          style={[styles.navTab, activeScreen === 'register' && styles.navTabActive]}
+          onPress={() => setCurrentView('register')}
         >
-          <Text style={[styles.debugTabText, showRegister && styles.debugTabTextActive]}>
-            📝 Formulario (3 Tabs)
+          <Text style={[styles.navTabText, activeScreen === 'register' && styles.navTabTextActive]}>
+            📝 Registro
           </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
-          style={[styles.debugTab, !showRegister && styles.debugTabActive]}
-          onPress={() => setViewMode('force_status')}
+          style={[styles.navTab, activeScreen === 'pending' && styles.navTabActive]}
+          onPress={() => setCurrentView('pending')}
         >
-          <Text style={[styles.debugTabText, !showRegister && styles.debugTabTextActive]}>
-            ⏳ Estado Aprobación
+          <Text style={[styles.navTabText, activeScreen === 'pending' && styles.navTabTextActive]}>
+            ⏳ Aprobación
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.navTab, activeScreen === 'home' && styles.navTabActive]}
+          onPress={() => setCurrentView('home')}
+        >
+          <Text style={[styles.navTabText, activeScreen === 'home' && styles.navTabTextActive]}>
+            🚗 Inicio / GPS
           </Text>
         </TouchableOpacity>
       </View>
 
-      {showRegister ? (
-        <RegisterTabsScreen onRegistrationSuccess={() => setViewMode('force_status')} />
-      ) : (
-        <PendingApprovalScreen />
+      {/* Renderizado de pantalla activa */}
+      {activeScreen === 'register' && (
+        <RegisterTabsScreen onRegistrationSuccess={() => setCurrentView('pending')} />
       )}
+      {activeScreen === 'pending' && <PendingApprovalScreen />}
+      {activeScreen === 'home' && <HomeScreen onOpenDrawer={() => setCurrentView('pending')} />}
     </View>
   );
 }
+
 
 export default function App() {
   return (
@@ -63,31 +90,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.fondo,
   },
-  debugBar: {
+  navBar: {
     flexDirection: 'row',
     backgroundColor: colors.superficie,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.sm,
     paddingTop: spacing.xs,
     paddingBottom: spacing.xs,
     borderBottomWidth: 1,
     borderBottomColor: colors.borde,
     zIndex: 10,
   },
-  debugTab: {
+  navTab: {
     flex: 1,
     paddingVertical: 6,
     alignItems: 'center',
     borderRadius: radius.sm,
   },
-  debugTabActive: {
+  navTabActive: {
     backgroundColor: colors.superficieClara,
   },
-  debugTabText: {
+  navTabText: {
     color: colors.textoSuave,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
   },
-  debugTabTextActive: {
+  navTabTextActive: {
     color: colors.primario,
     fontWeight: '700',
   },

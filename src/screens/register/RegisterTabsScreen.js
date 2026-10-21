@@ -50,8 +50,9 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 24) + spacing.sm }]}>
       {/* Cabecera con selector de Pestañas */}
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Registro de Conductor</Text>
         <Text style={styles.headerSubtitle}>Completa las 3 secciones obligatorias</Text>

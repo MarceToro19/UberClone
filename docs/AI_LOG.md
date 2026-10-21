@@ -44,4 +44,19 @@ Esta bitácora registra cada interacción relevante con herramientas de Intelige
 - **Verificación**: Metro Bundler compiló 303 módulos exitosamente sin errores de sintaxis ni de layout.
 - **Aprendizaje**: La validación continua con `useMemo` sobre cada pestaña permite brindar retroalimentación en tiempo real en los iconos de las pestañas (cambiando a check verde cuando la sección está completa) sin bloquear la navegación del usuario.
 
+---
+
+### Entrada #4
+- **Fecha**: 2026-10-20
+- **Integrante**: Marcela
+- **Herramienta**: Antigravity / Gemini
+- **Objetivo**: Desarrollar el Módulo 3.1 y 7 (Pantalla Principal, Mapa, Switch Disponible/No disponible y hook obligatorio `useDriverLocation` con limpieza en desmontaje).
+- **Prompt**: "puedes continuar [con el modulo 3]"
+- **Resumen de la respuesta**: Se creó el hook `useDriverLocation` que activa el seguimiento continuo cuando el conductor pasa a `Disponible` y lo detiene inmediatamente en la función de limpieza de `useEffect` al desconectarse o desmontar la vista. Se implementó el componente visual `DriverMapView` con marcador rotativo de telemetría y la pantalla `HomeScreen` con botón switch interactivo de conexión, barra de saldo y categoría de vehículo.
+- **Qué se usó / modificó / descartó**: Se implementó una solución de telemetría continua ligera compatible con Web/Móvil con intervalo de refresco cada 4 segundos, respetando la recomendación de consumo de la Sección 7 para no agotar cuotas de Google Maps.
+- **Archivos y commit**: `src/hooks/useDriverLocation.js`, `src/components/DriverMapView.js`, `src/screens/HomeScreen.js`, `App.js`, `docs/AI_LOG.md` — *Commit Módulo 3*.
+- **Verificación**: Metro Bundler compiló 306 módulos exitosamente con código de salida 0 (`The command exited with code 0`).
+- **Aprendizaje**: La función de retorno de `useEffect` (`return () => clearInterval / clearWatch`) es crítica en React Native para evitar fugas de memoria y gasto de batería cuando el conductor pasa a estado inactivo.
+
+
 
