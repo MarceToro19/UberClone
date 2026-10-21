@@ -15,3 +15,18 @@ Esta bitácora registra cada interacción relevante con herramientas de Intelige
 - **Archivos y commit**: `AGENTS.md`, `CLAUDE.md`, `package.json`, `app.json`, `.gitignore`, `App.js`, `src/theme/index.js`, `src/config/pricing.js`, `src/utils/calculateFare.js`, `src/hooks/useAlmacenamiento.js` — *Primer commit de línea base*.
 - **Verificación**: Probado matemáticamente el cálculo de tarifas con el ejemplo de la Sección 5 (8.5 km, 22 min, XL = $26.900 COP tarifa bruta, $5.380 COP comisión del 20%, $21.520 COP ganancia neta).
 - **Aprendizaje**: Centralizar todas las constantes de negocio y multiplicadores de categorías en `src/config/pricing.js` previene inconsistencias entre el cálculo de solicitudes y el cierre de viajes.
+
+---
+
+### Entrada #2
+- **Fecha**: 2026-10-20
+- **Integrante**: Marcela
+- **Herramienta**: Antigravity / Gemini
+- **Objetivo**: Desarrollar la Parte 1 del Módulo 2 (Registro del Conductor): componentes reutilizables de formulario, validadores en línea de las 3 pestañas (personales, vehículo, documentos) y contexto global de sesión `DriverSessionContext`.
+- **Prompt**: "pasemos al modulo 2 registro del conductor , creemos esta logica y si es necesario las vistas, recuerda que si es extenso esta implemntacion realicemosla en dos partes para ir creadno lso commits"
+- **Resumen de la respuesta**: Se modularizó la implementación en dos fases atómicas. En esta primera fase se implementaron los componentes base de formulario visual sin alertas (`FormField`, `OptionSelector`, `PhotoPickerField`), el motor puro de validación (`registerValidators.js`) con las reglas estrictas del PDF (mayor de 18 años, placa colombiana ABC123, capacidad mín 6 en XL, SOAT/Licencia vigentes y comisión del 20%) y el contexto `DriverSessionContext` con soporte de persistencia y simulación del estado `Pendiente de aprobación` / `Aprobado`.
+- **Qué se usó / modificó / descartó**: Se utilizaron los tokens de estilo y el hook `useAlmacenamiento`. Se descartaron validaciones intrusivas mediante `Alert` (estrictamente prohibidas por el documento oficial).
+- **Archivos y commit**: `src/components/FormComponents.js`, `src/utils/registerValidators.js`, `src/context/DriverSessionContext.js`, `docs/AI_LOG.md` — *Commit Parte 1 Módulo 2*.
+- **Verificación**: Pruebas automáticas exitosas en consola de validación positiva y captura estricta de errores esperados (menor de edad y capacidad XL menor a 6).
+- **Aprendizaje**: Separar las funciones puras de validación de los componentes de UI permite reutilizar las reglas tanto en tiempo real en los inputs como al evaluar la habilitación global del botón final.
+
