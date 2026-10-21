@@ -1,96 +1,94 @@
+// AI-assisted: see docs/AI_LOG.md #3
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, radius, typography } from './src/theme';
-import { calculateFare } from './src/utils/calculateFare';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { DriverSessionProvider, useDriverSession } from './src/context/DriverSessionContext';
+import RegisterTabsScreen from './src/screens/register/RegisterTabsScreen';
+import PendingApprovalScreen from './src/screens/register/PendingApprovalScreen';
+import { colors, spacing, radius } from './src/theme';
 
-export default function App() {
-  // Verificación matemática de tarifas basada en el ejemplo de la Sección 5:
-  // Viaje de 8.5 km y 22 minutos, categoría XL:
-  const pruebaCalculo = calculateFare({ distanceKm: 8.5, durationMin: 22, category: 'xl' });
+function AppContent() {
+  const { isRegistered, driverProfile } = useDriverSession();
+  const [viewMode, setViewMode] = React.useState('auto'); // 'auto' | 'force_register' | 'force_status'
+
+  // Si no está registrado va a RegisterTabsScreen; si ya se registró va a PendingApprovalScreen
+  const showRegister = viewMode === 'force_register' || (viewMode === 'auto' && !isRegistered);
 
   return (
+    <View style={styles.container}>
+      <StatusBar style="light" />
+
+      {/* Selector superior para navegar fácilmente entre las vistas de prueba */}
+      <View style={styles.debugBar}>
+        <TouchableOpacity
+          style={[styles.debugTab, showRegister && styles.debugTabActive]}
+          onPress={() => setViewMode('force_register')}
+        >
+          <Text style={[styles.debugTabText, showRegister && styles.debugTabTextActive]}>
+            📝 Formulario (3 Tabs)
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.debugTab, !showRegister && styles.debugTabActive]}
+          onPress={() => setViewMode('force_status')}
+        >
+          <Text style={[styles.debugTabText, !showRegister && styles.debugTabTextActive]}>
+            ⏳ Estado Aprobación
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {showRegister ? (
+        <RegisterTabsScreen onRegistrationSuccess={() => setViewMode('force_status')} />
+      ) : (
+        <PendingApprovalScreen />
+      )}
+    </View>
+  );
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.contenedor}>
-        <StatusBar style="light" />
-        <View style={styles.tarjeta}>
-          <Text style={styles.badge}>UBERCLONE CONDUCTOR</Text>
-          <Text style={styles.titulo}>Línea Base Lista</Text>
-          <Text style={styles.subtitulo}>
-            Estructura arquitectónica y tokens de diseño inicializados.
-          </Text>
-
-          <View style={styles.divisor} />
-
-          <Text style={styles.seccionTitulo}>Prueba Motor de Tarifas (Sección 5):</Text>
-          <Text style={styles.info}>• Distancia/Tiempo: 8.5 km / 22 min (XL)</Text>
-          <Text style={styles.info}>• Tarifa calculada: ${pruebaCalculo.fare.toLocaleString('es-CO')} COP</Text>
-          <Text style={styles.info}>• Comisión (20%): ${pruebaCalculo.commission.toLocaleString('es-CO')} COP</Text>
-          <Text style={[styles.info, styles.ganancia]}>
-            • Ganancia neta: ${pruebaCalculo.driverEarnings.toLocaleString('es-CO')} COP
-          </Text>
-        </View>
-      </SafeAreaView>
+      <DriverSessionProvider>
+        <AppContent />
+      </DriverSessionProvider>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  contenedor: {
+  container: {
     flex: 1,
     backgroundColor: colors.fondo,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
   },
-  tarjeta: {
-    width: '100%',
-    maxWidth: 500,
+  debugBar: {
+    flexDirection: 'row',
     backgroundColor: colors.superficie,
-    borderRadius: radius.md,
-    padding: spacing.xl,
-    borderWidth: 1,
-    borderColor: colors.borde,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borde,
+    zIndex: 10,
   },
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.primarioSuave,
-    color: colors.primario,
-    fontSize: 11,
-    fontWeight: '700',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+  debugTab: {
+    flex: 1,
+    paddingVertical: 6,
+    alignItems: 'center',
     borderRadius: radius.sm,
-    marginBottom: spacing.md,
-    letterSpacing: 1,
   },
-  titulo: {
-    ...typography.tituloGrande,
-    marginBottom: spacing.xs,
+  debugTabActive: {
+    backgroundColor: colors.superficieClara,
   },
-  subtitulo: {
-    ...typography.cuerpo,
+  debugTabText: {
     color: colors.textoSuave,
-    marginBottom: spacing.lg,
+    fontSize: 12,
+    fontWeight: '600',
   },
-  divisor: {
-    height: 1,
-    backgroundColor: colors.borde,
-    marginVertical: spacing.md,
-  },
-  seccionTitulo: {
-    ...typography.subtitulo,
-    marginBottom: spacing.sm,
-  },
-  info: {
-    ...typography.cuerpo,
-    color: colors.textoSuave,
-    marginVertical: 2,
-  },
-  ganancia: {
+  debugTabTextActive: {
     color: colors.primario,
     fontWeight: '700',
-    marginTop: spacing.xs,
   },
 });

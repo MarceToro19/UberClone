@@ -30,3 +30,18 @@ Esta bitácora registra cada interacción relevante con herramientas de Intelige
 - **Verificación**: Pruebas automáticas exitosas en consola de validación positiva y captura estricta de errores esperados (menor de edad y capacidad XL menor a 6).
 - **Aprendizaje**: Separar las funciones puras de validación de los componentes de UI permite reutilizar las reglas tanto en tiempo real en los inputs como al evaluar la habilitación global del botón final.
 
+---
+
+### Entrada #3
+- **Fecha**: 2026-10-20
+- **Integrante**: Marcela
+- **Herramienta**: Antigravity / Gemini
+- **Objetivo**: Desarrollar la Parte 2 del Módulo 2 (Pantallas de Registro por Pestañas y Estado de Aprobación): `PersonalTabScreen`, `VehicleTabScreen`, `DocumentsTabScreen`, contenedor `RegisterTabsScreen` y `PendingApprovalScreen`.
+- **Prompt**: "listo puedes continuar [con la parte 2 del modulo 2]"
+- **Resumen de la respuesta**: Se construyeron las 3 pantallas de cada pestaña y el contenedor con barra de progreso y botón "Enviar registro" reactivo a la validez del 100% de los campos. Además, se construyó la pantalla oficial de estado `Pendiente de aprobación` con bloqueo del botón de disponibilidad y switch de simulación de base de datos requerido por la Sección 2.
+- **Qué se usó / modificó / descartó**: Se conectaron los validadores puros desarrollados en la Entrada #2 con el estado del `DriverSessionContext`. Se compiló y verificó con Metro Bundler (`npx expo export --platform web`).
+- **Archivos y commit**: `src/screens/register/PersonalTabScreen.js`, `src/screens/register/VehicleTabScreen.js`, `src/screens/register/DocumentsTabScreen.js`, `src/screens/register/RegisterTabsScreen.js`, `src/screens/register/PendingApprovalScreen.js`, `App.js`, `docs/AI_LOG.md` — *Commit Parte 2 Módulo 2*.
+- **Verificación**: Metro Bundler compiló 303 módulos exitosamente sin errores de sintaxis ni de layout.
+- **Aprendizaje**: La validación continua con `useMemo` sobre cada pestaña permite brindar retroalimentación en tiempo real en los iconos de las pestañas (cambiando a check verde cuando la sección está completa) sin bloquear la navegación del usuario.
+
+
