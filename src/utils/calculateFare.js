@@ -19,14 +19,18 @@ import { PRICING_CONFIG, CATEGORY_MULTIPLIERS } from '../config/pricing.js';
  */
 export function calculateFare({ distanceKm = 0, durationMin = 0, category = 'economy', tip = 0 }) {
   const { tarifaBase, valorPorKm, valorPorMinuto, tarifaMinima, comisionPorcentaje } = PRICING_CONFIG;
-  const categoryInfo = CATEGORY_MULTIPLIERS[category] || CATEGORY_MULTIPLIERS.economy;
+  const normalizedCategory = (category || 'economy').toLowerCase();
+  const categoryInfo =
+    CATEGORY_MULTIPLIERS[normalizedCategory] ||
+    CATEGORY_MULTIPLIERS[normalizedCategory === 'económico' ? 'economy' : normalizedCategory] ||
+    CATEGORY_MULTIPLIERS.economy;
   const multiplier = categoryInfo.multiplier;
 
   const subtotal = tarifaBase + (distanceKm * valorPorKm) + (durationMin * valorPorMinuto);
-  const tarifaBruta = Math.max(tarifaMinima, subtotal * multiplier);
+  const tarifaCalculada = Math.max(tarifaMinima, subtotal * multiplier);
   
-  // Redondeo al múltiplo de 100 COP más cercano
-  const fare = Math.round(tarifaBruta / 100) * 100;
+  // Redondeo al múltiplo de 100 COP más cercano antes de comisión
+  const fare = Math.round(tarifaCalculada / 100) * 100;
   
   // Comisión del 20%
   const commission = Math.round(fare * comisionPorcentaje);
@@ -36,8 +40,23 @@ export function calculateFare({ distanceKm = 0, durationMin = 0, category = 'eco
 
   return {
     fare,
+    tarifaBruta: fare,
     commission,
+    comision: commission,
     driverEarnings,
+    gananciaNeta: driverEarnings,
     commissionRate: comisionPorcentaje,
   };
 }
+
+/**
+ * Función sobrecargada calculateTripFare para llamadas directas
+ * calculateTripFare(distanceKm, durationMin, category, tip)
+ */
+export function calculateTripFare(distanceKm, durationMin, category = 'economy', tip = 0) {
+  if (typeof distanceKm === 'object' && distanceKm !== null) {
+    return calculateFare(distanceKm);
+  }
+  return calculateFare({ distanceKm, durationMin, category, tip });
+}
+

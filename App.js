@@ -1,29 +1,36 @@
-// AI-assisted: see docs/AI_LOG.md #5
+// AI-assisted: see docs/AI_LOG.md #6
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DriverSessionProvider, useDriverSession } from './src/context/DriverSessionContext';
-import { ActiveTripProvider } from './src/context/ActiveTripContext';
+import { ActiveTripProvider, useActiveTrip } from './src/context/ActiveTripContext';
 import RegisterTabsScreen from './src/screens/register/RegisterTabsScreen';
 import PendingApprovalScreen from './src/screens/register/PendingApprovalScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import ActiveTripScreen from './src/screens/ActiveTripScreen';
+import TripSummaryScreen from './src/screens/TripSummaryScreen';
 import { colors, spacing, radius } from './src/theme';
 
 function AppContent() {
   const insets = useSafeAreaInsets();
   const { isRegistered, isApproved } = useDriverSession();
+  const { activeTrip, hasActiveTrip } = useActiveTrip();
   const [currentView, setCurrentView] = React.useState('auto'); 
-  // 'auto' | 'register' | 'pending' | 'home'
+  // 'auto' | 'register' | 'pending' | 'home' | 'active_trip' | 'summary'
 
-  // Determinación de la pantalla a mostrar
+  // Determinación reactiva de la pantalla a mostrar
   let activeScreen = 'register';
   if (currentView === 'auto') {
     if (!isRegistered) {
       activeScreen = 'register';
     } else if (!isApproved) {
       activeScreen = 'pending';
+    } else if (hasActiveTrip) {
+      activeScreen = 'active_trip';
+    } else if (activeTrip?.status === 'completed') {
+      activeScreen = 'summary';
     } else {
       activeScreen = 'home';
     }
@@ -63,6 +70,15 @@ function AppContent() {
             🚗 Inicio / GPS
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.navTab, (activeScreen === 'active_trip' || activeScreen === 'summary') && styles.navTabActive]}
+          onPress={() => setCurrentView(activeTrip?.status === 'completed' ? 'summary' : 'active_trip')}
+        >
+          <Text style={[styles.navTabText, (activeScreen === 'active_trip' || activeScreen === 'summary') && styles.navTabTextActive]}>
+            🧭 Viaje
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Renderizado de pantalla activa */}
@@ -70,7 +86,23 @@ function AppContent() {
         <RegisterTabsScreen onRegistrationSuccess={() => setCurrentView('pending')} />
       )}
       {activeScreen === 'pending' && <PendingApprovalScreen />}
-      {activeScreen === 'home' && <HomeScreen onOpenDrawer={() => setCurrentView('pending')} />}
+      {activeScreen === 'home' && (
+        <HomeScreen
+          onOpenDrawer={() => setCurrentView('pending')}
+          onTripStarted={() => setCurrentView('auto')}
+        />
+      )}
+      {activeScreen === 'active_trip' && (
+        <ActiveTripScreen
+          onTripFinished={() => setCurrentView('summary')}
+          onCancelToHome={() => setCurrentView('home')}
+        />
+      )}
+      {activeScreen === 'summary' && (
+        <TripSummaryScreen
+          onFinishSummary={() => setCurrentView('home')}
+        />
+      )}
     </View>
   );
 }

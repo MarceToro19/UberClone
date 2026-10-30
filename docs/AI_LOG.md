@@ -71,3 +71,31 @@ Esta bitácora registra cada interacción relevante con herramientas de Intelige
 - **Archivos y commit**: `src/data/mockTripRequests.js`, `src/hooks/useTripRequests.js`, `src/context/ActiveTripContext.js`, `src/screens/IncomingRequestModal.js`, `src/screens/HomeScreen.js`, `App.js`, `docs/AI_LOG.md` — *Commit Módulo 3.2 (Solicitudes Entrantes)*.
 - **Verificación**: Metro Bundler compiló 316 módulos exitosamente con código de salida 0 (`The command exited with code 0`).
 - **Aprendizaje**: La sincronización entre el temporizador de cuenta regresiva (15s) y la condición de `isAvailable` requiere limpiar y resetear las referencias `setInterval` inmediatamente en los callbacks de aceptación/rechazo para evitar condiciones de carrera o rechazos involuntarios.
+
+---
+
+### Entrada #6
+- **Fecha**: 2026-10-29
+- **Integrante**: Marcela
+- **Herramienta**: Antigravity / Gemini
+- **Objetivo**: Desarrollar el Módulo 4 y 5.1 (Pantalla de Viaje Activo y Pantalla de Resumen/Cobro): ciclo de estados del viaje (`accepted` -> `driver_arriving` -> `in_progress` -> `completed`), cronómetro continuo, restricción de cancelaciones y cálculo de cobro en efectivo vs pasarela con impacto en el saldo del conductor.
+- **Prompt**: "pasemos al sigueinte modulo"
+- **Resumen de la respuesta**: Se creó la pantalla [ActiveTripScreen.js](file:///c:/Users/Marcela/Documents/UberClone/src/screens/ActiveTripScreen.js) con barra de progreso de 4 pasos, cronómetro en vivo, botón dinámico de cambio de estado y restricción de cancelación que impide cancelar una vez el pasajero esté a bordo (`in_progress`). Se creó la pantalla [TripSummaryScreen.js](file:///c:/Users/Marcela/Documents/UberClone/src/screens/TripSummaryScreen.js) con el desglose exacto de la tarifa redondeada en COP, cálculo de la comisión del 20% y actualización del saldo: en efectivo se descuenta la comisión del saldo interno, mientras que en pasarela se acredita la ganancia neta. Se integró la navegación reactiva en [App.js](file:///c:/Users/Marcela/Documents/UberClone/App.js).
+- **Qué se usó / modificó / descartó**: Se utilizó la paleta y componentes de `src/theme`, cronómetro con `useEffect` e integración con `ActiveTripContext` y `DriverSessionContext`.
+- **Archivos y commit**: `src/screens/ActiveTripScreen.js`, `src/screens/TripSummaryScreen.js`, `App.js`, `docs/AI_LOG.md` — *Commit Módulo 4 y 5.1 (Viaje Activo y Resumen de Cobro)*.
+- **Verificación**: Metro Bundler compiló 319 módulos exitosamente con código de salida 0 (`The command exited with code 0`).
+- **Aprendizaje**: La distinción entre cobro en efectivo (donde la app descuenta comisión de la billetera virtual) y pasarela (donde se acredita ganancia neta) debe reflejarse transparentemente en la UI de resumen para evitar confusiones al conductor antes de volver a ponerse disponible.
+
+---
+
+### Entrada #7
+- **Fecha**: 2026-10-29
+- **Integrante**: Marcela
+- **Herramienta**: Antigravity / Gemini
+- **Objetivo**: Integrar la credencial oficial de Google Maps Platform (Sección 7 del documento de requisitos), aprovechando el crédito mensual gratuito de $200 USD para carga de mapa web con estilo oscuro (Dark Mode) y marcador SVG reactivo.
+- **Prompt**: "credencial que geneor el portal es esta y veo qu elos servicios ya estan habilitados: AIzaSyAUbzCSiEGOV9j7Hs7le2s5w5x2SUeW4tY"
+- **Resumen de la respuesta**: Se creó el archivo de configuración centralizada [mapsConfig.js](file:///c:/Users/Marcela/Documents/UberClone/src/config/mapsConfig.js) con la clave de API y la paleta de estilo oscuro nocturna (Dark Theme Uber). Se actualizó [app.json](file:///c:/Users/Marcela/Documents/UberClone/app.json) con la configuración de Google Maps para Android e iOS. Se actualizó el componente visual [DriverMapView.js](file:///c:/Users/Marcela/Documents/UberClone/src/components/DriverMapView.js) para inyectar dinámicamente la librería de Google Maps JavaScript API en web, centrar el mapa en la ubicación del conductor y rotar el marcador según la orientación de telemetría.
+- **Qué se usó / modificó / descartó**: Se utilizó `google.maps.Map` con carga dinámica asíncrona sin bloquear la UI ni depender de librerías nativas conflictivas en web. Se conservó el renderizado de respaldo y telemetría flotante para asegurar estabilidad total.
+- **Archivos y commit**: `src/config/mapsConfig.js`, `app.json`, `src/components/DriverMapView.js`, `docs/AI_LOG.md` — *Commit Integración Google Maps Platform*.
+- **Verificación**: Metro Bundler empaquetó 320 módulos con código de salida 0 sin ningún error (`The command exited with code 0`).
+- **Aprendizaje**: Cargar Google Maps JavaScript API de manera asíncrona con script dinámico en entornos web de React Native/Expo permite utilizar la API oficial sin perder compatibilidad ni requerir paquetes pesados adicionales.

@@ -7,11 +7,19 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAUbzCSiEGOV9j7Hs7le2s5w5x2SUeW4tY"
+      }
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAUbzCSiEGOV9j7Hs7le2s5w5x2SUeW4tY"
+        }
+      }
     },
     "web": {
       "output": "single"

@@ -33,6 +33,14 @@ export const radius = {
 };
 
 export const typography = {
+  tamanios: {
+    xs: 11,
+    sm: 13,
+    md: 15,
+    lg: 18,
+    xl: 22,
+    xxl: 28,
+  },
   tituloGrande: { fontSize: 26, fontWeight: '800', color: colors.texto },
   titulo: { fontSize: 20, fontWeight: '700', color: colors.texto },
   subtitulo: { fontSize: 16, fontWeight: '600', color: colors.texto },

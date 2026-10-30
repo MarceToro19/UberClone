@@ -17,7 +17,7 @@ const ActiveTripContext = createContext(null);
  */
 
 export function ActiveTripProvider({ children }) {
-  const { valor: storedActiveTrip, guardar: saveStoredTrip, remover: removeStoredTrip } =
+  const [storedActiveTrip, saveStoredTrip, , removeStoredTrip] =
     useAlmacenamiento('@uberclone_active_trip', null);
 
   const [activeTrip, setActiveTrip] = useState(null);
