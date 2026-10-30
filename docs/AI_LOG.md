@@ -58,5 +58,16 @@ Esta bitácora registra cada interacción relevante con herramientas de Intelige
 - **Verificación**: Metro Bundler compiló 306 módulos exitosamente con código de salida 0 (`The command exited with code 0`).
 - **Aprendizaje**: La función de retorno de `useEffect` (`return () => clearInterval / clearWatch`) es crítica en React Native para evitar fugas de memoria y gasto de batería cuando el conductor pasa a estado inactivo.
 
+---
 
-
+### Entrada #5
+- **Fecha**: 2026-10-29
+- **Integrante**: Marcela
+- **Herramienta**: Antigravity / Gemini
+- **Objetivo**: Desarrollar el Módulo 3.2 (Solicitudes Entrantes de Viaje): hook `useTripRequests` con temporizador estricto de 15 segundos, auto-rechazo, contexto `ActiveTripContext` y modal interactivo `IncomingRequestModal`.
+- **Prompt**: "procedamos con le siguiente paso"
+- **Resumen de la respuesta**: Se creó el conjunto de datos de prueba simulados con cálculo de tarifa en COP ([mockTripRequests.js](file:///c:/Users/Marcela/Documents/UberClone/src/data/mockTripRequests.js)), el hook obligatorio [useTripRequests.js](file:///c:/Users/Marcela/Documents/UberClone/src/hooks/useTripRequests.js) con temporizador regresivo de 15s y limpieza en desmontaje/rechazo, el contexto global [ActiveTripContext.js](file:///c:/Users/Marcela/Documents/UberClone/src/context/ActiveTripContext.js) para orquestar los estados del viaje y el modal oficial [IncomingRequestModal.js](file:///c:/Users/Marcela/Documents/UberClone/src/screens/IncomingRequestModal.js) con ganancia neta en COP, detalle de tarifa, datos del pasajero, recorrido e indicador de tiempo crítico. Se integró todo reactivamente en [HomeScreen.js](file:///c:/Users/Marcela/Documents/UberClone/src/screens/HomeScreen.js) y [App.js](file:///c:/Users/Marcela/Documents/UberClone/App.js).
+- **Qué se usó / modificó / descartó**: Se reutilizó `calculateTripFare` para desglosar la ganancia neta y comisión del 20% en tiempo real. Se descartaron librerías de alertas externas, resolviendo todo con un modal nativo y temporizador React puro.
+- **Archivos y commit**: `src/data/mockTripRequests.js`, `src/hooks/useTripRequests.js`, `src/context/ActiveTripContext.js`, `src/screens/IncomingRequestModal.js`, `src/screens/HomeScreen.js`, `App.js`, `docs/AI_LOG.md` — *Commit Módulo 3.2 (Solicitudes Entrantes)*.
+- **Verificación**: Metro Bundler compiló 316 módulos exitosamente con código de salida 0 (`The command exited with code 0`).
+- **Aprendizaje**: La sincronización entre el temporizador de cuenta regresiva (15s) y la condición de `isAvailable` requiere limpiar y resetear las referencias `setInterval` inmediatamente en los callbacks de aceptación/rechazo para evitar condiciones de carrera o rechazos involuntarios.

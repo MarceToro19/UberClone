@@ -1,27 +1,59 @@
-// AI-assisted: see docs/AI_LOG.md #4
-import React from 'react';
+// AI-assisted: see docs/AI_LOG.md #5
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDriverSession } from '../context/DriverSessionContext';
+import { useActiveTrip } from '../context/ActiveTripContext';
 import useDriverLocation from '../hooks/useDriverLocation';
+import useTripRequests from '../hooks/useTripRequests';
 import DriverMapView from '../components/DriverMapView';
+import IncomingRequestModal from './IncomingRequestModal';
 import { colors, spacing, radius, typography } from '../theme';
 
 /**
  * Pantalla Principal del Conductor (HomeScreen)
- * Sección 3.1 del documento oficial:
+ * Sección 3.1 y 3.2 del documento oficial:
  * - Mapa con la ubicación actual
  * - Interruptor Disponible / No disponible
  * - Rastreo de ubicación activo mientras está disponible
  * - Limpieza de rastreo al pasar a No disponible o salir de la pantalla
+ * - Recepción de solicitudes de viaje con temporizador de 15 segundos
+ * - Aceptación / Rechazo de viaje
  */
-export default function HomeScreen({ onOpenDrawer }) {
+export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
   const insets = useSafeAreaInsets();
   const { isAvailable, setIsAvailable, isApproved, driverProfile, balance } = useDriverSession();
+  const { hasActiveTrip, startTripFromRequest } = useActiveTrip();
 
-  // Hook obligatorio con limpieza en desmontaje/desconexión
+  // Hook obligatorio de ubicación con limpieza en desmontaje/desconexión
   const { location, isTracking } = useDriverLocation(isAvailable);
+
+  // Callback al aceptar viaje
+  const handleTripAccepted = useCallback(
+    (trip) => {
+      startTripFromRequest(trip);
+      if (onTripStarted) {
+        onTripStarted(trip);
+      }
+    },
+    [startTripFromRequest, onTripStarted]
+  );
+
+  // Hook obligatorio de solicitudes de viaje con timer de 15s
+  const {
+    currentRequest,
+    secondsLeft,
+    progressPercent,
+    acceptRequest,
+    rejectRequest,
+    triggerManualRequest,
+  } = useTripRequests({
+    isAvailable,
+    hasActiveTrip,
+    driverCategory: driverProfile?.vehicle?.category || 'Económico',
+    onTripAccepted: handleTripAccepted,
+  });
 
   const toggleAvailability = () => {
     if (!isApproved) return;
@@ -36,7 +68,6 @@ export default function HomeScreen({ onOpenDrawer }) {
       {/* Barra Superior con botón de menú e información de saldo */}
       <View style={[styles.topBar, { top: Math.max(insets.top, 24) + spacing.md }]}>
         <TouchableOpacity style={styles.menuButton} onPress={onOpenDrawer} activeOpacity={0.8}>
-
           <Ionicons name="menu" size={24} color={colors.texto} />
         </TouchableOpacity>
 
@@ -54,6 +85,18 @@ export default function HomeScreen({ onOpenDrawer }) {
           </Text>
         </View>
       </View>
+
+      {/* Botón flotante para simular solicitud manual (útil para pruebas inmediatas en desarrollo) */}
+      {isAvailable && !hasActiveTrip && !currentRequest && (
+        <TouchableOpacity
+          style={[styles.simRequestButton, { top: Math.max(insets.top, 24) + 80 }]}
+          onPress={triggerManualRequest}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="flash" size={16} color={colors.fondo} />
+          <Text style={styles.simRequestText}>Simular Solicitud Ahora</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Panel Inferior Flotante con el Switch Disponible / No Disponible */}
       <View style={[styles.bottomCard, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
@@ -92,10 +135,20 @@ export default function HomeScreen({ onOpenDrawer }) {
 
         <Text style={styles.hintText}>
           {isAvailable
-            ? 'Estás en línea recibiendo solicitudes cercanas. Tu GPS se envía en tiempo real.'
+            ? 'Estás en línea recibiendo solicitudes cercanas (15s para responder). Tu GPS se envía en tiempo real.'
             : 'Estás desconectado. El seguimiento GPS y recepción de viajes están detenidos.'}
         </Text>
       </View>
+
+      {/* Modal oficial de Solicitud de Viaje con timer de 15 segundos */}
+      <IncomingRequestModal
+        visible={!!currentRequest}
+        request={currentRequest}
+        secondsLeft={secondsLeft}
+        progressPercent={progressPercent}
+        onAccept={acceptRequest}
+        onReject={() => rejectRequest('manual')}
+      />
     </View>
   );
 }
@@ -161,6 +214,28 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     color: colors.texto,
+  },
+  simRequestButton: {
+    position: 'absolute',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primario,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.full,
+    zIndex: 15,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  simRequestText: {
+    color: colors.fondo,
+    fontSize: typography.tamanios.xs,
+    fontWeight: '800',
   },
   bottomCard: {
     position: 'absolute',

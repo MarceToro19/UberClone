@@ -1,10 +1,11 @@
-// AI-assisted: see docs/AI_LOG.md #4
+// AI-assisted: see docs/AI_LOG.md #5
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DriverSessionProvider, useDriverSession } from './src/context/DriverSessionContext';
+import { ActiveTripProvider } from './src/context/ActiveTripContext';
 import RegisterTabsScreen from './src/screens/register/RegisterTabsScreen';
 import PendingApprovalScreen from './src/screens/register/PendingApprovalScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -79,7 +80,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <DriverSessionProvider>
-        <AppContent />
+        <ActiveTripProvider>
+          <AppContent />
+        </ActiveTripProvider>
       </DriverSessionProvider>
     </SafeAreaProvider>
   );
