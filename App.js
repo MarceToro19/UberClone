@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #6
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -17,10 +16,8 @@ function AppContent() {
   const insets = useSafeAreaInsets();
   const { isRegistered, isApproved } = useDriverSession();
   const { activeTrip, hasActiveTrip } = useActiveTrip();
-  const [currentView, setCurrentView] = React.useState('auto'); 
-  // 'auto' | 'register' | 'pending' | 'home' | 'active_trip' | 'summary'
+  const [currentView, setCurrentView] = React.useState('auto');
 
-  // Determinación reactiva de la pantalla a mostrar
   let activeScreen = 'register';
   if (currentView === 'auto') {
     if (!isRegistered) {
@@ -42,7 +39,6 @@ function AppContent() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Barra de navegación de desarrollo protegida con Safe Area */}
       <View style={[styles.navBar, { paddingTop: Math.max(insets.top, 16) + spacing.xs }]}>
         <TouchableOpacity
           style={[styles.navTab, activeScreen === 'register' && styles.navTabActive]}
@@ -81,7 +77,6 @@ function AppContent() {
         </TouchableOpacity>
       </View>
 
-      {/* Renderizado de pantalla activa */}
       {activeScreen === 'register' && (
         <RegisterTabsScreen onRegistrationSuccess={() => setCurrentView('pending')} />
       )}
@@ -106,7 +101,6 @@ function AppContent() {
     </View>
   );
 }
-
 
 export default function App() {
   return (
