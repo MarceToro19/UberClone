@@ -1,10 +1,5 @@
-// AI-assisted: see docs/AI_LOG.md #5
 import { calculateTripFare } from '../utils/calculateFare';
 
-/**
- * Solicitudes de viaje simuladas para pruebas en Medellín / Colombia.
- * Cada una con tiempos, distancias, categoría y pasajero.
- */
 export const MOCK_TRIP_REQUESTS = [
   {
     id: 'req-001',
@@ -27,7 +22,7 @@ export const MOCK_TRIP_REQUESTS = [
     distanceKm: 3.8,
     estimatedMinutes: 12,
     category: 'Económico',
-    paymentMethod: 'cash', // 'cash' | 'card' / Mercado Pago
+    paymentMethod: 'cash',
   },
   {
     id: 'req-002',
@@ -100,9 +95,6 @@ export const MOCK_TRIP_REQUESTS = [
   },
 ];
 
-/**
- * Enriquecer un request con los cálculos oficiales de tarifa del PDF
- */
 export function buildTripRequestWithPricing(rawRequest, driverCategory = null) {
   const categoryToUse = driverCategory || rawRequest.category || 'Económico';
   const fareResult = calculateTripFare(

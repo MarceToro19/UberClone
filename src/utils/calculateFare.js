@@ -1,22 +1,5 @@
-// AI-assisted: see docs/AI_LOG.md #1
 import { PRICING_CONFIG, CATEGORY_MULTIPLIERS } from '../config/pricing.js';
 
-/**
- * Función pura para cálculo de tarifa, comisión y ganancia neta.
- * Sección 5 del documento UberClone Conductor:
- * - Subtotal = Base + (km * Vkm) + (min * Vmin)
- * - Tarifa Bruta = max(Minima, Subtotal * Multiplicador)
- * - Tarifa Redondeada = Múltiplo de 100 COP más cercano
- * - Comisión = Tarifa Redondeada * 0.20
- * - Ganancia Neta = Tarifa Redondeada - Comisión + Propina
- *
- * @param {Object} params
- * @param {number} params.distanceKm - Distancia en kilómetros
- * @param {number} params.durationMin - Duración en minutos
- * @param {string} params.category - 'economy' | 'xl' | 'premium'
- * @param {number} [params.tip=0] - Propina voluntaria
- * @returns {{ fare: number, commission: number, driverEarnings: number, commissionRate: number }}
- */
 export function calculateFare({ distanceKm = 0, durationMin = 0, category = 'economy', tip = 0 }) {
   const { tarifaBase, valorPorKm, valorPorMinuto, tarifaMinima, comisionPorcentaje } = PRICING_CONFIG;
   const normalizedCategory = (category || 'economy').toLowerCase();
@@ -29,13 +12,10 @@ export function calculateFare({ distanceKm = 0, durationMin = 0, category = 'eco
   const subtotal = tarifaBase + (distanceKm * valorPorKm) + (durationMin * valorPorMinuto);
   const tarifaCalculada = Math.max(tarifaMinima, subtotal * multiplier);
   
-  // Redondeo al múltiplo de 100 COP más cercano antes de comisión
   const fare = Math.round(tarifaCalculada / 100) * 100;
   
-  // Comisión del 20%
   const commission = Math.round(fare * comisionPorcentaje);
   
-  // Ganancia neta para el conductor + propina íntegra
   const driverEarnings = (fare - commission) + Math.round(tip || 0);
 
   return {
@@ -49,14 +29,9 @@ export function calculateFare({ distanceKm = 0, durationMin = 0, category = 'eco
   };
 }
 
-/**
- * Función sobrecargada calculateTripFare para llamadas directas
- * calculateTripFare(distanceKm, durationMin, category, tip)
- */
 export function calculateTripFare(distanceKm, durationMin, category = 'economy', tip = 0) {
   if (typeof distanceKm === 'object' && distanceKm !== null) {
     return calculateFare(distanceKm);
   }
   return calculateFare({ distanceKm, durationMin, category, tip });
 }
-

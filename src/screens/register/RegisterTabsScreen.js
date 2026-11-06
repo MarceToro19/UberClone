@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #3
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,10 +16,9 @@ import { colors, spacing, radius, typography } from '../../theme';
 export default function RegisterTabsScreen({ onRegistrationSuccess }) {
   const insets = useSafeAreaInsets();
   const { registerForm, updateFormTab, submitRegistration } = useDriverSession();
-  const [activeTab, setActiveTab] = useState('personal'); // 'personal' | 'vehicle' | 'documents'
+  const [activeTab, setActiveTab] = useState('personal');
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
-  // Evaluaciones reactivas de validez de cada pestaña (Sección 2)
   const isPersonalValid = useMemo(
     () => validatePersonalTab(registerForm.personal).isValid,
     [registerForm.personal]
@@ -36,7 +34,6 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
     [registerForm.documents, registerForm.vehicle.year]
   );
 
-  // Solo se habilita el botón Enviar registro cuando las tres están completas y válidas (Sección 2)
   const isAllValid = isPersonalValid && isVehicleValid && isDocumentsValid;
 
   const handleSubmit = () => {
@@ -51,8 +48,6 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
 
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top, 24) + spacing.sm }]}>
-      {/* Cabecera con selector de Pestañas */}
-
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Registro de Conductor</Text>
         <Text style={styles.headerSubtitle}>Completa las 3 secciones obligatorias</Text>
@@ -105,7 +100,6 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
         </View>
       </View>
 
-      {/* Contenido dinámico según pestaña activa */}
       <View style={styles.body}>
         {activeTab === 'personal' && (
           <PersonalTabScreen
@@ -131,7 +125,6 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
         )}
       </View>
 
-      {/* Barra inferior fija con el botón Enviar registro */}
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
         <View style={styles.statusRow}>
           <Text style={styles.statusText}>

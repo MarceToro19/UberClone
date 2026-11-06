@@ -1,13 +1,8 @@
-// AI-assisted: see docs/AI_LOG.md #2
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography } from '../theme';
 
-/**
- * Campo de texto reutilizable con label, icono y mensaje de error en línea debajo.
- * NO usa Alert para validación (cumple Sección 2 del PDF).
- */
 export function FormField({
   label,
   value,
@@ -43,9 +38,6 @@ export function FormField({
   );
 }
 
-/**
- * Selector de opciones tipo Pills / Dropdown estilizado
- */
 export function OptionSelector({ label, options, selectedValue, onSelect, error }) {
   return (
     <View style={styles.fieldContainer}>
@@ -70,9 +62,6 @@ export function OptionSelector({ label, options, selectedValue, onSelect, error 
   );
 }
 
-/**
- * Selector simulado/picker de foto para cámara o galería
- */
 export function PhotoPickerField({ label, uri, onPickPhoto, error, helper = 'Toca para cargar o simular foto' }) {
   return (
     <View style={styles.fieldContainer}>

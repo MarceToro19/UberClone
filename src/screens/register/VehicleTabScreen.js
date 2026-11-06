@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #3
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { FormField, OptionSelector, PhotoPickerField } from '../../components/FormComponents';
@@ -24,7 +23,6 @@ export default function VehicleTabScreen({ formData, onChangeData, isSubmitted }
         selectedValue={formData.category}
         onSelect={(val) => {
           const updates = { category: val };
-          // Si elige XL y la capacidad actual es menor a 6, se sugiere 6
           if (val === 'xl' && parseInt(formData.capacity, 10) < 6) {
             updates.capacity = '6';
           }

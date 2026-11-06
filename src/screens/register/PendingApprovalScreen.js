@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #3
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,7 +54,6 @@ export default function PendingApprovalScreen() {
           </View>
         )}
 
-        {/* Interruptor de Disponibilidad condicionado por Aprobación */}
         <View style={styles.switchSection}>
           <Text style={styles.switchTitle}>Disponibilidad para recibir viajes:</Text>
           <TouchableOpacity
@@ -93,7 +91,6 @@ export default function PendingApprovalScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Herramienta de simulación de base de datos requerida en Sección 2 del PDF */}
         <View style={styles.devBox}>
           <Text style={styles.devTitle}>🛠 Simulación de Base de Datos (Sección 2 PDF):</Text>
           <Text style={styles.devSubtitle}>

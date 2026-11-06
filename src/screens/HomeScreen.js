@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #5
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,25 +10,13 @@ import DriverMapView from '../components/DriverMapView';
 import IncomingRequestModal from './IncomingRequestModal';
 import { colors, spacing, radius, typography } from '../theme';
 
-/**
- * Pantalla Principal del Conductor (HomeScreen)
- * Sección 3.1 y 3.2 del documento oficial:
- * - Mapa con la ubicación actual
- * - Interruptor Disponible / No disponible
- * - Rastreo de ubicación activo mientras está disponible
- * - Limpieza de rastreo al pasar a No disponible o salir de la pantalla
- * - Recepción de solicitudes de viaje con temporizador de 15 segundos
- * - Aceptación / Rechazo de viaje
- */
 export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
   const insets = useSafeAreaInsets();
   const { isAvailable, setIsAvailable, isApproved, driverProfile, balance } = useDriverSession();
   const { hasActiveTrip, startTripFromRequest } = useActiveTrip();
 
-  // Hook obligatorio de ubicación con limpieza en desmontaje/desconexión
   const { location, isTracking } = useDriverLocation(isAvailable);
 
-  // Callback al aceptar viaje
   const handleTripAccepted = useCallback(
     (trip) => {
       startTripFromRequest(trip);
@@ -40,7 +27,6 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
     [startTripFromRequest, onTripStarted]
   );
 
-  // Hook obligatorio de solicitudes de viaje con timer de 15s
   const {
     currentRequest,
     secondsLeft,
@@ -62,10 +48,8 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
 
   return (
     <View style={styles.container}>
-      {/* Vista de Mapa en Vivo */}
       <DriverMapView location={location} isTracking={isTracking} isAvailable={isAvailable} />
 
-      {/* Barra Superior con botón de menú e información de saldo */}
       <View style={[styles.topBar, { top: Math.max(insets.top, 24) + spacing.md }]}>
         <TouchableOpacity style={styles.menuButton} onPress={onOpenDrawer} activeOpacity={0.8}>
           <Ionicons name="menu" size={24} color={colors.texto} />
@@ -86,7 +70,6 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
         </View>
       </View>
 
-      {/* Botón flotante para simular solicitud manual (útil para pruebas inmediatas en desarrollo) */}
       {isAvailable && !hasActiveTrip && !currentRequest && (
         <TouchableOpacity
           style={[styles.simRequestButton, { top: Math.max(insets.top, 24) + 80 }]}
@@ -98,7 +81,6 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
         </TouchableOpacity>
       )}
 
-      {/* Panel Inferior Flotante con el Switch Disponible / No Disponible */}
       <View style={[styles.bottomCard, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
         <View style={styles.driverQuickInfo}>
           <View style={styles.avatarMini}>
@@ -115,7 +97,6 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
           <View style={[styles.stateDot, isAvailable ? styles.stateDotOnline : styles.stateDotOffline]} />
         </View>
 
-        {/* Botón Principal Switch Disponible / No Disponible */}
         <TouchableOpacity
           style={[styles.switchButton, isAvailable ? styles.switchOnline : styles.switchOffline]}
           onPress={toggleAvailability}
@@ -140,7 +121,6 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
         </Text>
       </View>
 
-      {/* Modal oficial de Solicitud de Viaje con timer de 15 segundos */}
       <IncomingRequestModal
         visible={!!currentRequest}
         request={currentRequest}

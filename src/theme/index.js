@@ -1,17 +1,16 @@
-// AI-assisted: see docs/AI_LOG.md #1
 export const colors = {
-  fondo: '#0f172a',          // Fondo oscuro elegante para conductores
-  superficie: '#1e293b',     // Tarjetas y modales
+  fondo: '#0f172a',
+  superficie: '#1e293b',
   superficieClara: '#334155',
-  texto: '#f8fafc',          // Texto principal de alto contraste
-  textoSuave: '#94a3b8',     // Subtítulos y etiquetas secundarias
+  texto: '#f8fafc',
+  textoSuave: '#94a3b8',
   borde: '#334155',
-  primario: '#10b981',       // Verde de acción / disponible (estilo movilidad)
+  primario: '#10b981',
   primarioSuave: '#064e3b',
-  peligro: '#ef4444',        // Rojo desconectado / rechazar
+  peligro: '#ef4444',
   peligroSuave: '#450a0a',
-  advertencia: '#f59e0b',    // Alerta o pendiente
-  dorado: '#eab308',         // Ganancias
+  advertencia: '#f59e0b',
+  dorado: '#eab308',
   blanco: '#ffffff',
   negro: '#000000',
 };

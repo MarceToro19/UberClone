@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #7
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -6,10 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { MAP_CONFIG } from '../config/mapsConfig';
 import { colors, spacing, radius } from '../theme';
 
-/**
- * DriverMapView exclusivo para Dispositivos Móviles (Android / iOS).
- * Utiliza react-native-maps con PROVIDER_GOOGLE y la API Key nativa de app.json.
- */
 export default function DriverMapView({ location, isTracking, isAvailable }) {
   const nativeMapRef = useRef(null);
 
@@ -60,13 +55,11 @@ export default function DriverMapView({ location, isTracking, isAvailable }) {
         </Marker>
       </MapView>
 
-      {/* Badge oficial de Google Maps */}
       <View style={styles.googleBadge}>
         <Ionicons name="map" size={12} color={colors.primario} />
         <Text style={styles.googleBadgeText}>Google Maps Móvil • Conectado</Text>
       </View>
 
-      {/* Tarjeta flotante con telemetría de ubicación continua */}
       <View style={styles.telemetryCard}>
         <View style={styles.telemetryHeader}>
           <View style={[styles.statusDot, isTracking ? styles.dotGreen : styles.dotGray]} />

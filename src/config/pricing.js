@@ -1,14 +1,9 @@
-// AI-assisted: see docs/AI_LOG.md #1
-/**
- * Parámetros y tarifas del sistema (Valores didácticos en COP enteros)
- * Conforme a la Sección 5 del documento oficial UberClone — Versión Conductor
- */
 export const PRICING_CONFIG = {
-  tarifaBase: 3500,        // COP
-  valorPorKm: 1200,        // COP
-  valorPorMinuto: 250,     // COP
-  tarifaMinima: 6000,      // COP
-  comisionPorcentaje: 0.20 // 20% retenido por la plataforma
+  tarifaBase: 3500,
+  valorPorKm: 1200,
+  valorPorMinuto: 250,
+  tarifaMinima: 6000,
+  comisionPorcentaje: 0.20
 };
 
 export const CATEGORY_MULTIPLIERS = {

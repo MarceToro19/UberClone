@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #6
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   View,
@@ -14,27 +13,14 @@ import { useActiveTrip } from '../context/ActiveTripContext';
 import DriverMapView from '../components/DriverMapView';
 import { colors, spacing, radius, typography } from '../theme';
 
-/**
- * Pantalla de Viaje Activo (ActiveTripScreen)
- * Cumple estrictamente con la Sección 3.2 y 3.3 del PDF:
- * 
- * Flujo de estados del viaje:
- * 1. 'accepted': Conductor se dirige hacia el punto de recogida.
- * 2. 'driver_arriving': Conductor ha llegado al punto de recogida.
- * 3. 'in_progress': Pasajero a bordo hacia el destino (bloquea cancelaciones).
- * 4. 'completed': Viaje finalizado; procede al cobro y resumen.
- * 5. 'cancelled': Cancelación permitida únicamente antes de in_progress.
- */
 export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
   const insets = useSafeAreaInsets();
   const { activeTrip, updateTripStatus, cancelActiveTrip } = useActiveTrip();
 
-  // Cronómetro del viaje activo en segundos
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const timerRef = useRef(null);
 
-  // Pasos de estado para la barra de progreso
   const statusSteps = useMemo(
     () => [
       { key: 'accepted', label: 'En camino a recogida', icon: 'navigate' },
@@ -47,7 +33,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
 
   const currentStatus = activeTrip?.status || 'accepted';
 
-  // Sincronizar índice del paso
   useEffect(() => {
     const idx = statusSteps.findIndex((s) => s.key === currentStatus);
     if (idx !== -1) {
@@ -55,7 +40,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
     }
   }, [currentStatus, statusSteps]);
 
-  // Manejo del cronómetro continuo
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setElapsedSeconds((prev) => prev + 1);
@@ -74,7 +58,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Transición al siguiente estado
   const handleNextStatus = useCallback(() => {
     if (currentStatus === 'accepted') {
       updateTripStatus('driver_arriving');
@@ -88,7 +71,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
     }
   }, [currentStatus, updateTripStatus, elapsedSeconds, activeTrip, onTripFinished]);
 
-  // Cancelar viaje
   const handleCancelTrip = useCallback(() => {
     if (currentStatus === 'in_progress' || currentStatus === 'completed') {
       return;
@@ -113,7 +95,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
 
   const { passenger, pickup, destination, pricing, category, distanceKm } = activeTrip;
 
-  // Texto y estilo dinámico del botón principal según el estado
   let actionButtonLabel = 'Notificar Llegada';
   let actionButtonColor = colors.primario;
   let actionIcon = 'location-outline';
@@ -132,7 +113,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
 
   return (
     <View style={styles.container}>
-      {/* Vista de Mapa en Vivo centrado en el viaje */}
       <DriverMapView
         location={{
           coords: {
@@ -146,7 +126,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
         isAvailable={true}
       />
 
-      {/* Cabecera Flotante con Cronómetro y Categoría */}
       <View style={[styles.floatingHeader, { top: Math.max(insets.top, 24) + spacing.xs }]}>
         <View style={styles.timerBadge}>
           <Ionicons name="time-outline" size={16} color={colors.primario} />
@@ -165,9 +144,7 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
         </View>
       </View>
 
-      {/* Panel Inferior con Pasajero, Ruta y Botón de Estado */}
       <View style={[styles.bottomSheet, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
-        {/* Barra de Progreso de 4 Pasos */}
         <View style={styles.stepsBar}>
           {statusSteps.map((step, idx) => {
             const isCompleted = idx < currentStepIndex;
@@ -200,7 +177,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           })}
         </View>
 
-        {/* Tarjeta del Pasajero y Datos de Contacto */}
         <View style={styles.passengerCard}>
           <View style={styles.avatarPlaceholder}>
             <Ionicons name="person" size={24} color={colors.texto} />
@@ -225,7 +201,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           </TouchableOpacity>
         </View>
 
-        {/* Destino o Punto de Recogida según el estado actual */}
         <View style={styles.destinationCard}>
           <View style={styles.targetIconBox}>
             <Ionicons
@@ -247,7 +222,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           </View>
         </View>
 
-        {/* Botón Principal de Acción de Estado */}
         <TouchableOpacity
           style={[styles.mainActionButton, { backgroundColor: actionButtonColor }]}
           onPress={handleNextStatus}
@@ -257,7 +231,6 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           <Text style={styles.mainActionButtonText}>{actionButtonLabel}</Text>
         </TouchableOpacity>
 
-        {/* Botón de Cancelación (Solo antes de in_progress) */}
         {canCancel && (
           <TouchableOpacity
             style={styles.cancelTripButton}

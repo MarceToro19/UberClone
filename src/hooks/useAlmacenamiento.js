@@ -1,11 +1,6 @@
-// AI-assisted: see docs/AI_LOG.md #1
 import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/**
- * Hook reutilizable de AsyncStorage con limpieza en desmontaje y manejo de errores.
- * Patrón heredado de ReservaClaseIngles/src/hooks/useAlmacenamiento.js
- */
 export default function useAlmacenamiento(clave, valorInicial) {
   const [valor, setValor] = useState(valorInicial);
   const [listo, setListo] = useState(false);

@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #3
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

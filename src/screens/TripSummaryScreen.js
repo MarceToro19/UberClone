@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #6
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,19 +6,6 @@ import { useDriverSession } from '../context/DriverSessionContext';
 import { useActiveTrip } from '../context/ActiveTripContext';
 import { colors, spacing, radius, typography } from '../theme';
 
-/**
- * Pantalla de Resumen de Viaje (TripSummaryScreen)
- * Cumple con la Sección 3.4 y 5 del PDF oficial:
- * 
- * - Desglose financiero completo en pesos colombianos enteros (COP):
- *   * Tarifa total (redondeada al múltiplo de 100)
- *   * Comisión de la plataforma (20% exacto)
- *   * Ganancia neta para el conductor
- * - Método de pago del pasajero:
- *   * Efectivo: conductor cobra el total físico; la comisión se descuenta de su saldo interno en la app.
- *   * Pasarela (Mercado Pago): la app acredita la ganancia neta directamente a su saldo.
- * - Botón para finalizar viaje y regresar al mapa en estado disponible.
- */
 export default function TripSummaryScreen({ onFinishSummary }) {
   const insets = useSafeAreaInsets();
   const { balance, setBalance } = useDriverSession();
@@ -48,10 +34,7 @@ export default function TripSummaryScreen({ onFinishSummary }) {
   const totalCustomerFare = (pricing?.tarifaBruta || 0) + tipAmount;
   const commission = pricing?.comision || 0;
 
-  // Confirmar cobro y actualizar saldo del conductor
   const handleConfirmAndClose = () => {
-    // Si es efectivo: Conductor cobró físico todo. Saldo app se descuenta por la comisión (20%)
-    // Si es pasarela: Saldo app se acredita con la ganancia neta (+ propina)
     const balanceDelta = isCash ? -commission : finalDriverEarnings;
     const nextBalance = (balance || 0) + balanceDelta;
     setBalance(nextBalance);
@@ -78,7 +61,6 @@ export default function TripSummaryScreen({ onFinishSummary }) {
       style={styles.container}
       contentContainerStyle={[styles.content, { paddingTop: Math.max(insets.top, 24) + spacing.md }]}
     >
-      {/* Icono de Éxito y Título */}
       <View style={styles.successHeader}>
         <View style={styles.checkIconBox}>
           <Ionicons name="checkmark-done" size={32} color={colors.fondo} />
@@ -87,7 +69,6 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         <Text style={styles.subtitle}>Resumen financiero y estado de pago</Text>
       </View>
 
-      {/* Tarjeta Principal: Ganancia Neta */}
       <View style={styles.earningsCard}>
         <Text style={styles.earningsLabel}>TU GANANCIA NETA</Text>
         <Text style={styles.earningsAmount}>
@@ -105,7 +86,6 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         </View>
       </View>
 
-      {/* Desglose Matemático Oficial del PDF */}
       <View style={styles.breakdownCard}>
         <Text style={styles.cardSectionTitle}>Desglose de Tarifa</Text>
 
@@ -138,7 +118,6 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         </View>
       </View>
 
-      {/* Explicación de impacto en el Saldo del Conductor */}
       <View style={styles.balanceImpactCard}>
         <Ionicons
           name="information-circle-outline"
@@ -157,7 +136,6 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         </View>
       </View>
 
-      {/* Resumen del Trayecto */}
       <View style={styles.tripDetailsCard}>
         <Text style={styles.cardSectionTitle}>Datos del Viaje</Text>
 
@@ -187,7 +165,6 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         </View>
       </View>
 
-      {/* Botón de Confirmación y Cierre */}
       <TouchableOpacity
         style={styles.doneButton}
         onPress={handleConfirmAndClose}

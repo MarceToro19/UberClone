@@ -1,17 +1,11 @@
-// AI-assisted: see docs/AI_LOG.md #7
-/**
- * Configuración centralizada de Google Maps Platform.
- * Utiliza el crédito mensual recurrente gratuito de $200 USD (Sección 7 del documento de requisitos).
- */
 export const GOOGLE_MAPS_API_KEY = 'AIzaSyAUbzCSiEGOV9j7Hs7le2s5w5x2SUeW4tY';
 
 export const MAP_CONFIG = {
   defaultCenter: {
-    lat: 6.2089, // El Poblado, Medellín, Colombia
+    lat: 6.2089,
     lng: -75.5678,
   },
   defaultZoom: 15,
-  // Estilo Dark Mode Uber para Google Maps JavaScript
   darkMapStyle: [
     { elementType: 'geometry', stylers: [{ color: '#1e293b' }] },
     { elementType: 'labels.text.stroke', stylers: [{ color: '#1e293b' }] },

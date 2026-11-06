@@ -1,14 +1,9 @@
-// AI-assisted: see docs/AI_LOG.md #7
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GOOGLE_MAPS_API_KEY, MAP_CONFIG } from '../config/mapsConfig';
 import { colors, spacing, radius } from '../theme';
 
-/**
- * DriverMapView exclusivo para Web
- * Carga Google Maps JavaScript API sin tocar librerías nativas de Android/iOS.
- */
 export default function DriverMapView({ location, isTracking, isAvailable }) {
   const mapDivRef = useRef(null);
   const googleMapInstance = useRef(null);

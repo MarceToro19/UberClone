@@ -1,17 +1,8 @@
-// AI-assisted: see docs/AI_LOG.md #5
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MOCK_TRIP_REQUESTS, buildTripRequestWithPricing } from '../data/mockTripRequests';
 
-const REQUEST_TIMEOUT_SECONDS = 15; // Requerimiento estricto del PDF: 15 segundos
+const REQUEST_TIMEOUT_SECONDS = 15;
 
-/**
- * Hook obligatorio useTripRequests
- * Maneja el ciclo de vida de las solicitudes entrantes:
- * - Se activa únicamente cuando isAvailable === true y no hay un viaje activo.
- * - Temporizador estricto de 15 segundos con cuenta regresiva por segundo.
- * - Si el temporizador expira sin respuesta, la solicitud se rechaza automáticamente.
- * - Limpieza obligatoria del temporizador al desmontar, cancelar o cambiar estado.
- */
 export default function useTripRequests({
   isAvailable = false,
   hasActiveTrip = false,
@@ -26,7 +17,6 @@ export default function useTripRequests({
   const simulationTimerRef = useRef(null);
   const requestIndexRef = useRef(0);
 
-  // Limpiar temporizador de cuenta regresiva
   const clearCountdown = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -34,7 +24,6 @@ export default function useTripRequests({
     }
   }, []);
 
-  // Limpiar temporizador de simulación de despacho
   const clearSimulationTimer = useCallback(() => {
     if (simulationTimerRef.current) {
       clearTimeout(simulationTimerRef.current);
@@ -42,7 +31,6 @@ export default function useTripRequests({
     }
   }, []);
 
-  // Función para rechazar viaje actual
   const rejectRequest = useCallback((reason = 'manual') => {
     clearCountdown();
     if (currentRequest) {
@@ -55,7 +43,6 @@ export default function useTripRequests({
     setSecondsLeft(REQUEST_TIMEOUT_SECONDS);
   }, [clearCountdown, currentRequest]);
 
-  // Función para aceptar viaje actual
   const acceptRequest = useCallback(() => {
     clearCountdown();
     if (!currentRequest) return null;
@@ -77,7 +64,6 @@ export default function useTripRequests({
     return acceptedTrip;
   }, [clearCountdown, currentRequest, onTripAccepted]);
 
-  // Función para despachar una nueva solicitud simulada
   const triggerNewRequest = useCallback(() => {
     if (!isAvailable || hasActiveTrip || currentRequest) return;
 
@@ -89,7 +75,6 @@ export default function useTripRequests({
     setSecondsLeft(REQUEST_TIMEOUT_SECONDS);
   }, [isAvailable, hasActiveTrip, currentRequest, driverCategory]);
 
-  // Manejo del temporizador de 15 segundos cuando hay un request activo
   useEffect(() => {
     if (!currentRequest) return;
 
@@ -97,7 +82,6 @@ export default function useTripRequests({
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
-          // Expiró el tiempo -> Auto-rechazar según PDF
           clearInterval(timerRef.current);
           timerRef.current = null;
           rejectRequest('timeout');
@@ -112,7 +96,6 @@ export default function useTripRequests({
     };
   }, [currentRequest, clearCountdown, rejectRequest]);
 
-  // Programar llegada de solicitudes simuladas mientras esté Disponible y sin viaje activo
   useEffect(() => {
     if (!isAvailable || hasActiveTrip) {
       clearCountdown();
@@ -121,7 +104,6 @@ export default function useTripRequests({
       return;
     }
 
-    // Si está disponible y no hay solicitud, programar una tras 5 segundos de espera
     if (!currentRequest) {
       clearSimulationTimer();
       simulationTimerRef.current = setTimeout(() => {
@@ -134,7 +116,6 @@ export default function useTripRequests({
     };
   }, [isAvailable, hasActiveTrip, currentRequest, clearCountdown, clearSimulationTimer, triggerNewRequest]);
 
-  // Limpieza total en desmontaje del hook
   useEffect(() => {
     return () => {
       clearCountdown();

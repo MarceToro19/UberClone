@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #3
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { FormField, OptionSelector, PhotoPickerField } from '../../components/FormComponents';
@@ -18,7 +17,6 @@ export default function PersonalTabScreen({ formData, onChangeData, isSubmitted 
         label="Foto de perfil (Obligatoria)*"
         uri={formData.photoUri}
         onPickPhoto={() => {
-          // Simula cambio o selección de foto
           onChangeData({ photoUri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300' });
         }}
         error={errors.photoUri}

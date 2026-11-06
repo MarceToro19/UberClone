@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import useAlmacenamiento from '../hooks/useAlmacenamiento';
 import { DRIVER_STATUS } from '../config/pricing';
@@ -7,7 +6,7 @@ export const DriverSessionContext = createContext(null);
 
 export const INITIAL_REGISTER_FORM = {
   personal: {
-    photoUri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300', // Foto de prueba por defecto
+    photoUri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
     fullName: '',
     documentId: '',
     phone: '',
@@ -39,16 +38,11 @@ export const INITIAL_REGISTER_FORM = {
 };
 
 export function DriverSessionProvider({ children }) {
-  // Conductor guardado en almacenamiento seguro no sensible
   const [driverProfile, setDriverProfile] = useAlmacenamiento('@driver_profile', null);
-  // Estado de aprobación: 'pending_approval' o 'approved' (Sección 2)
   const [approvalStatus, setApprovalStatus] = useAlmacenamiento('@driver_approval_status', DRIVER_STATUS.PENDING_APPROVAL);
-  // Estado disponible / no disponible (Sección 3)
   const [isAvailable, setIsAvailable] = useAlmacenamiento('@driver_is_available', false);
-  // Saldo interno del conductor
   const [balance, setBalance] = useAlmacenamiento('@driver_balance', 0);
 
-  // Formulario en borrador mientras el conductor completa las 3 pestañas
   const [registerForm, setRegisterForm] = useState(INITIAL_REGISTER_FORM);
 
   const updateFormTab = (tab, data) => {
@@ -72,7 +66,6 @@ export function DriverSessionProvider({ children }) {
     setIsAvailable(false);
   };
 
-  // Simulación para aprobar al conductor (cumple Sección 2: "puede simularse cambiando el campo")
   const simulateToggleApproval = () => {
     const nextStatus =
       approvalStatus === DRIVER_STATUS.APPROVED

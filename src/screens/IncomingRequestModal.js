@@ -1,19 +1,8 @@
-// AI-assisted: see docs/AI_LOG.md #5
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography } from '../theme';
 
-/**
- * IncomingRequestModal
- * Modal oficial de solicitud entrante con:
- * - Temporizador circular/barra de 15 segundos
- * - Información del pasajero (nombre, calificación, viajes)
- * - Dirección de recogida y destino
- * - Ganancia neta calculada en COP y tarifa total
- * - Distancia y tiempo estimado
- * - Botones de Aceptar y Rechazar
- */
 export default function IncomingRequestModal({
   visible = false,
   request = null,
@@ -36,7 +25,6 @@ export default function IncomingRequestModal({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.sheetContainer}>
-          {/* Barra de progreso de tiempo restante (15 segundos) */}
           <View style={styles.progressTrack}>
             <View
               style={[
@@ -47,7 +35,6 @@ export default function IncomingRequestModal({
             />
           </View>
 
-          {/* Cabecera con temporizador y categoría */}
           <View style={styles.headerRow}>
             <View style={styles.categoryBadge}>
               <Ionicons name="car-sport" size={14} color={colors.primario} />
@@ -68,7 +55,6 @@ export default function IncomingRequestModal({
             </View>
           </View>
 
-          {/* Tarjeta de Ganancia Neta Destacada */}
           <View style={styles.earningsBox}>
             <Text style={styles.earningsSub}>GANANCIA ESTIMADA (NETA)</Text>
             <Text style={styles.earningsMain}>
@@ -85,7 +71,6 @@ export default function IncomingRequestModal({
             </View>
           </View>
 
-          {/* Información del Pasajero */}
           <View style={styles.passengerRow}>
             {passenger?.avatar ? (
               <Image source={{ uri: passenger.avatar }} style={styles.passengerAvatar} />
@@ -108,7 +93,6 @@ export default function IncomingRequestModal({
             </View>
           </View>
 
-          {/* Itinerario: Recogida y Destino */}
           <View style={styles.routeContainer}>
             <View style={styles.routeTimeline}>
               <View style={styles.dotOrigin} />
@@ -133,7 +117,6 @@ export default function IncomingRequestModal({
             </View>
           </View>
 
-          {/* Botones de Acción: Rechazar (Cancelar) y Aceptar */}
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={styles.rejectButton}
