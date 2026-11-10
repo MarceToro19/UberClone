@@ -4,6 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { GOOGLE_MAPS_API_KEY, MAP_CONFIG } from '../config/mapsConfig';
 import { colors, spacing, radius } from '../theme';
 
+function getRedCarMarkerIcon(maps) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="44" height="44"><circle cx="32" cy="32" r="28" fill="#ffffff" stroke="#ef4444" stroke-width="4"/><path d="M18 34 L21 22 C22 19 24 18 27 18 L37 18 C40 18 42 19 43 22 L46 34 C47 35 48 37 48 39 L48 43 C48 44.5 47 45.5 45.5 45.5 L43.5 45.5 C42 45.5 41 44.5 41 43 L41 41 L23 41 L23 43 C23 44.5 22 45.5 20.5 45.5 L18.5 45.5 C17 45.5 16 44.5 16 43 L16 39 C16 37 17 35 18 34 Z" fill="#ef4444" stroke="#991b1b" stroke-width="1.5"/><path d="M23.5 21 L40.5 21 L42.5 29 L21.5 29 Z" fill="#1e293b"/><circle cx="22.5" cy="35" r="2.3" fill="#fef08a"/><circle cx="41.5" cy="35" r="2.3" fill="#fef08a"/></svg>`;
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new maps.Size(44, 44),
+    anchor: new maps.Point(22, 22),
+  };
+}
+
 export default function DriverMapView({ location, isTracking, isAvailable }) {
   const mapDivRef = useRef(null);
   const googleMapInstance = useRef(null);
@@ -37,15 +46,7 @@ export default function DriverMapView({ location, isTracking, isAvailable }) {
           position: center,
           map,
           title: 'Conductor UberClone',
-          icon: {
-            path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 6,
-            fillColor: isAvailable ? '#10b981' : '#ef4444',
-            fillOpacity: 1,
-            strokeWeight: 2,
-            strokeColor: '#ffffff',
-            rotation: heading,
-          },
+          icon: getRedCarMarkerIcon(window.google.maps),
         });
 
         googleMapInstance.current = map;
@@ -85,15 +86,7 @@ export default function DriverMapView({ location, isTracking, isAvailable }) {
 
     const newPos = { lat: latitude, lng: longitude };
     driverMarkerRef.current.setPosition(newPos);
-    driverMarkerRef.current.setIcon({
-      path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-      scale: 6,
-      fillColor: isAvailable ? '#10b981' : '#ef4444',
-      fillOpacity: 1,
-      strokeWeight: 2,
-      strokeColor: '#ffffff',
-      rotation: heading,
-    });
+    driverMarkerRef.current.setIcon(getRedCarMarkerIcon(window.google.maps));
 
     if (isTracking) {
       googleMapInstance.current.panTo(newPos);

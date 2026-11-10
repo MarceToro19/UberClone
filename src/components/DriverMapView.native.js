@@ -46,11 +46,9 @@ export default function DriverMapView({ location, isTracking, isAvailable }) {
         <Marker
           coordinate={{ latitude, longitude }}
           anchor={{ x: 0.5, y: 0.5 }}
-          flat={true}
-          rotation={heading}
         >
-          <View style={[styles.carMarker, isAvailable ? styles.carAvailable : styles.carOffline]}>
-            <Ionicons name="navigate" size={22} color={colors.blanco} />
+          <View style={styles.carMarker}>
+            <Ionicons name="car-sport" size={24} color={colors.peligro} />
           </View>
         </Marker>
       </MapView>
@@ -98,6 +96,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.full,
+    backgroundColor: colors.blanco,
+    borderWidth: 2.5,
+    borderColor: colors.peligro,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -105,12 +106,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 5,
     elevation: 6,
-  },
-  carAvailable: {
-    backgroundColor: colors.primario,
-  },
-  carOffline: {
-    backgroundColor: colors.peligro,
   },
   googleBadge: {
     position: 'absolute',

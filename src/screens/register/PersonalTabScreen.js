@@ -1,12 +1,16 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { FormField, OptionSelector, PhotoPickerField } from '../../components/FormComponents';
+import DatePickerField from '../../components/DatePickerField';
 import { validatePersonalTab } from '../../utils/registerValidators';
 import { colors, spacing, typography } from '../../theme';
 
 export default function PersonalTabScreen({ formData, onChangeData, isSubmitted }) {
   const validation = useMemo(() => validatePersonalTab(formData), [formData]);
   const errors = isSubmitted ? validation.errors : {};
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -56,13 +60,17 @@ export default function PersonalTabScreen({ formData, onChangeData, isSubmitted 
         leftIcon="call-outline"
       />
 
-      <FormField
+      <DatePickerField
         label="Fecha de nacimiento (Mayor de 18 años)*"
         value={formData.birthDate}
-        onChangeText={(text) => onChangeData({ birthDate: text })}
-        placeholder="AAAA-MM-DD (ej. 1995-08-20)"
+        onChangeDate={(dateStr) => onChangeData({ birthDate: dateStr })}
+        placeholder="Selecciona tu fecha de nacimiento"
         error={errors.birthDate}
         leftIcon="calendar-outline"
+        maxDate={todayStr}
+        minYear={1940}
+        maxYear={now.getFullYear()}
+        initialViewDate="1995-05-15"
       />
 
       <OptionSelector

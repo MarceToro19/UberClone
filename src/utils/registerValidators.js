@@ -119,6 +119,8 @@ export function validateDocumentsTab(data, vehicleYear) {
 
   if (!data.licenseNumber || !data.licenseNumber.trim()) {
     errors.licenseNumber = 'Número de licencia obligatorio';
+  } else if (!/^\d{1,10}$/.test(data.licenseNumber.trim())) {
+    errors.licenseNumber = 'Debe ser numérico y de máximo 10 dígitos';
   }
   if (!data.licensePhotoUri) {
     errors.licensePhotoUri = 'Foto de la licencia obligatoria';

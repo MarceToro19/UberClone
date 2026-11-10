@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FormField, PhotoPickerField } from '../../components/FormComponents';
+import DatePickerField from '../../components/DatePickerField';
 import { validateDocumentsTab } from '../../utils/registerValidators';
 import { colors, spacing, radius, typography } from '../../theme';
 import { PRICING_CONFIG } from '../../config/pricing';
@@ -14,6 +15,10 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
   const vYear = parseInt(vehicleYear, 10);
   const requiresTecno = !isNaN(vYear) && currentYear - vYear >= 5;
 
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Text style={styles.sectionTitle}>Paso 3: Documentos y Pagos</Text>
@@ -22,19 +27,24 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
       <FormField
         label="Número de Licencia de Conducción*"
         value={formData.licenseNumber}
-        onChangeText={(text) => onChangeData({ licenseNumber: text })}
-        placeholder="Ej. 10987654321"
+        onChangeText={(text) => onChangeData({ licenseNumber: text.replace(/\D/g, '').slice(0, 10) })}
+        placeholder="(ej. 1098765432)"
+        keyboardType="numeric"
+        maxLength={10}
         error={errors.licenseNumber}
         leftIcon="document-text-outline"
       />
 
-      <FormField
+      <DatePickerField
         label="Fecha de vencimiento de Licencia (Futura)*"
         value={formData.licenseExpiry}
-        onChangeText={(text) => onChangeData({ licenseExpiry: text })}
-        placeholder="AAAA-MM-DD (ej. 2028-12-31)"
+        onChangeDate={(dateStr) => onChangeData({ licenseExpiry: dateStr })}
+        placeholder="Selecciona fecha de vencimiento"
         error={errors.licenseExpiry}
         leftIcon="calendar-outline"
+        minDate={tomorrowStr}
+        minYear={currentYear}
+        maxYear={currentYear + 15}
       />
 
       <PhotoPickerField
@@ -49,13 +59,16 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
 
       <View style={styles.separator} />
 
-      <FormField
+      <DatePickerField
         label="Fecha de vencimiento del SOAT (Futura)*"
         value={formData.soatExpiry}
-        onChangeText={(text) => onChangeData({ soatExpiry: text })}
-        placeholder="AAAA-MM-DD (ej. 2027-11-20)"
+        onChangeDate={(dateStr) => onChangeData({ soatExpiry: dateStr })}
+        placeholder="Selecciona fecha de vencimiento"
         error={errors.soatExpiry}
         leftIcon="shield-checkmark-outline"
+        minDate={tomorrowStr}
+        minYear={currentYear}
+        maxYear={currentYear + 15}
       />
 
       <PhotoPickerField
@@ -74,13 +87,16 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
           <Text style={styles.infoBadge}>
             Vehículo de más de 5 años: Exige Revisión Técnico-Mecánica
           </Text>
-          <FormField
+          <DatePickerField
             label="Fecha de vencimiento Técnico-Mecánica*"
             value={formData.tecnoExpiry}
-            onChangeText={(text) => onChangeData({ tecnoExpiry: text })}
-            placeholder="AAAA-MM-DD (ej. 2027-05-10)"
+            onChangeDate={(dateStr) => onChangeData({ tecnoExpiry: dateStr })}
+            placeholder="Selecciona fecha de vencimiento"
             error={errors.tecnoExpiry}
             leftIcon="build-outline"
+            minDate={tomorrowStr}
+            minYear={currentYear}
+            maxYear={currentYear + 15}
           />
           <PhotoPickerField
             label="Foto del certificado de Técnico-Mecánica*"
