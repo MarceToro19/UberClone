@@ -92,7 +92,7 @@ export default function PendingApprovalScreen() {
         </View>
 
         <View style={styles.devBox}>
-          <Text style={styles.devTitle}>🛠 Simulación de Base de Datos (Sección 2 PDF):</Text>
+          <Text style={styles.devTitle}>🛠 Simulación de Base de Datos:</Text>
           <Text style={styles.devSubtitle}>
             "puede simularse cambiando el campo en la base de datos"
           </Text>

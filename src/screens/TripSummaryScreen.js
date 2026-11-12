@@ -14,6 +14,7 @@ export default function TripSummaryScreen({ onFinishSummary }) {
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [tipAmount, setTipAmount] = useState(0);
   const finishTimeoutRef = useRef(null);
+  const confirmHandlerRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -22,6 +23,20 @@ export default function TripSummaryScreen({ onFinishSummary }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!activeTrip?.autoSimulate || paymentConfirmed) {
+      return undefined;
+    }
+
+    const autoTimer = setTimeout(() => {
+      if (confirmHandlerRef.current) {
+        confirmHandlerRef.current();
+      }
+    }, 1500);
+
+    return () => clearTimeout(autoTimer);
+  }, [activeTrip?.id, activeTrip?.autoSimulate, paymentConfirmed]);
 
   if (!activeTrip) {
     return (
@@ -67,6 +82,8 @@ export default function TripSummaryScreen({ onFinishSummary }) {
     }, 600);
   };
 
+  confirmHandlerRef.current = handleConfirmAndClose;
+
   return (
     <ScrollView
       style={styles.container}
@@ -108,7 +125,7 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         {tipAmount > 0 && (
           <View style={styles.breakdownRow}>
             <Text style={styles.breakdownLabel}>Propina voluntaria</Text>
-            <Text style={[styles.breakdownValue, { color: colors.exito }]}>
+            <Text style={[styles.breakdownValue, { color: colors.primario }]}>
               +${tipAmount.toLocaleString('es-CO')} COP
             </Text>
           </View>
@@ -133,7 +150,7 @@ export default function TripSummaryScreen({ onFinishSummary }) {
         <Ionicons
           name="information-circle-outline"
           size={20}
-          color={isCash ? colors.alerta : colors.primario}
+          color={isCash ? colors.advertencia : colors.primario}
         />
         <View style={{ flex: 1, marginLeft: spacing.sm }}>
           <Text style={styles.impactTitle}>

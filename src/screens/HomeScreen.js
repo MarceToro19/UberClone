@@ -8,6 +8,7 @@ import useDriverLocation from '../hooks/useDriverLocation';
 import useTripRequests from '../hooks/useTripRequests';
 import DriverMapView from '../components/DriverMapView';
 import IncomingRequestModal from './IncomingRequestModal';
+import { MOCK_TRIP_REQUESTS, buildTripRequestWithPricing } from '../data/mockTripRequests';
 import { colors, spacing, radius, typography } from '../theme';
 
 export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
@@ -49,6 +50,35 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
     setIsAvailable(!isAvailable);
   };
 
+  const handleGoOffline = useCallback(() => {
+    rejectRequest('offline');
+    setIsAvailable(false);
+  }, [rejectRequest, setIsAvailable]);
+
+  const handleSimulateFullTrip = useCallback(() => {
+    if (!isApproved || hasActiveTrip || currentRequest) return;
+    const raw = MOCK_TRIP_REQUESTS[0];
+    const enriched = buildTripRequestWithPricing(
+      raw,
+      driverProfile?.vehicle?.category || 'Económico'
+    );
+    const createdTrip = startTripFromRequest({
+      ...enriched,
+      paymentMethod: 'cash',
+      autoSimulate: true,
+    });
+    if (onTripStarted) {
+      onTripStarted(createdTrip);
+    }
+  }, [
+    isApproved,
+    hasActiveTrip,
+    currentRequest,
+    driverProfile?.vehicle?.category,
+    startTripFromRequest,
+    onTripStarted,
+  ]);
+
   return (
     <View style={styles.container}>
       <DriverMapView location={location} isTracking={isTracking} isAvailable={isAvailable} />
@@ -73,15 +103,27 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
         </View>
       </View>
 
-      {isAvailable && !hasActiveTrip && !currentRequest && (
-        <TouchableOpacity
-          style={[styles.simRequestButton, { top: Math.max(insets.top, 24) + 80 }]}
-          onPress={triggerManualRequest}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="flash" size={16} color={colors.fondo} />
-          <Text style={styles.simRequestText}>Simular Solicitud Ahora</Text>
-        </TouchableOpacity>
+      {isApproved && !hasActiveTrip && !currentRequest && (
+        <View style={[styles.floatingActions, { top: Math.max(insets.top, 24) + 78 }]}>
+          {isAvailable && (
+            <TouchableOpacity
+              style={styles.simRequestButton}
+              onPress={triggerManualRequest}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="flash" size={15} color={colors.fondo} />
+              <Text style={styles.simRequestText}>Simular Solicitud Ahora</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={styles.simAutoTripButton}
+            onPress={handleSimulateFullTrip}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="play-circle" size={16} color={colors.blanco} />
+            <Text style={styles.simAutoTripText}>Simular Carrera Completa (10s)</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       <View style={[styles.bottomCard, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
@@ -131,6 +173,7 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
         progressPercent={progressPercent}
         onAccept={acceptRequest}
         onReject={() => rejectRequest('manual')}
+        onGoOffline={handleGoOffline}
       />
     </View>
   );
@@ -198,16 +241,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.texto,
   },
-  simRequestButton: {
+  floatingActions: {
     position: 'absolute',
     alignSelf: 'center',
+    alignItems: 'center',
+    zIndex: 15,
+    gap: 8,
+  },
+  simRequestButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.primario,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+    paddingVertical: spacing.xs + 2,
     borderRadius: radius.full,
-    zIndex: 15,
     gap: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -217,6 +264,27 @@ const styles = StyleSheet.create({
   },
   simRequestText: {
     color: colors.fondo,
+    fontSize: typography.tamanios.xs,
+    fontWeight: '800',
+  },
+  simAutoTripButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(15, 23, 42, 0.92)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 3,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.dorado,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  simAutoTripText: {
+    color: colors.dorado,
     fontSize: typography.tamanios.xs,
     fontWeight: '800',
   },

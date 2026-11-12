@@ -29,7 +29,7 @@ const DRAWER_ITEMS = [
 
 export default function DriverDrawer() {
   const insets = useSafeAreaInsets();
-  const { driverProfile, balance, logoutDriver } = useDriverSession();
+  const { driverProfile, balance, isAvailable, setIsAvailable, logoutDriver } = useDriverSession();
   const { activeTrip, hasActiveTrip, clearActiveTrip } = useActiveTrip();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const tabNavRef = useRef(null);
@@ -154,6 +154,27 @@ export default function DriverDrawer() {
                   <Text style={styles.drawerItemText}>{item.label}</Text>
                 </TouchableOpacity>
               ))}
+
+              <TouchableOpacity
+                style={[
+                  styles.drawerAvailabilityBtn,
+                  isAvailable ? styles.drawerOfflineBtn : styles.drawerOnlineBtn,
+                ]}
+                onPress={() => {
+                  setIsAvailable(!isAvailable);
+                  setDrawerOpen(false);
+                }}
+                activeOpacity={0.85}
+              >
+                <Ionicons
+                  name={isAvailable ? 'stop-circle' : 'power'}
+                  size={18}
+                  color={colors.blanco}
+                />
+                <Text style={styles.drawerAvailabilityText}>
+                  {isAvailable ? 'Ponerse Fuera de Línea' : 'Conectarse (Disponible)'}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
@@ -267,5 +288,25 @@ const styles = StyleSheet.create({
     color: colors.peligro,
     fontSize: typography.tamanios.md,
     fontWeight: '700',
+  },
+  drawerAvailabilityBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+  },
+  drawerOfflineBtn: {
+    backgroundColor: colors.peligro,
+  },
+  drawerOnlineBtn: {
+    backgroundColor: colors.primario,
+  },
+  drawerAvailabilityText: {
+    color: colors.blanco,
+    fontSize: typography.tamanios.sm,
+    fontWeight: '800',
   },
 });

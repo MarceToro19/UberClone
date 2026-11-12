@@ -138,9 +138,9 @@ export default function EarningsScreen({ onOpenDrawer }) {
             <Text style={styles.statPillLabel}>Efectivo</Text>
           </View>
           <View style={styles.statPill}>
-            <Ionicons name="card-outline" size={18} color={colors.dorado} />
-            <Text style={styles.statPillNum}>{summary.gatewayCount}</Text>
-            <Text style={styles.statPillLabel}>Pasarela</Text>
+            <Ionicons name="checkmark-circle-outline" size={18} color={colors.dorado} />
+            <Text style={styles.statPillNum}>{completedTrips.length}</Text>
+            <Text style={styles.statPillLabel}>Completados</Text>
           </View>
           <View style={styles.statPill}>
             <Ionicons name="close-circle-outline" size={18} color={colors.peligro} />

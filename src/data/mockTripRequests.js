@@ -45,7 +45,7 @@ export const MOCK_TRIP_REQUESTS = [
     distanceKm: 5.2,
     estimatedMinutes: 16,
     category: 'Económico',
-    paymentMethod: 'gateway',
+    paymentMethod: 'cash',
   },
   {
     id: 'req-003',
@@ -68,7 +68,7 @@ export const MOCK_TRIP_REQUESTS = [
     distanceKm: 8.5,
     estimatedMinutes: 22,
     category: 'XL',
-    paymentMethod: 'gateway',
+    paymentMethod: 'cash',
   },
   {
     id: 'req-004',

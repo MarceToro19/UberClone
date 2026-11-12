@@ -22,7 +22,13 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [isAutoSim, setIsAutoSim] = useState(Boolean(activeTrip?.autoSimulate));
+  const [simBanner, setSimBanner] = useState('');
   const timerRef = useRef(null);
+  const elapsedSecondsRef = useRef(0);
+  const activeTripRef = useRef(activeTrip);
+  elapsedSecondsRef.current = elapsedSeconds;
+  activeTripRef.current = activeTrip;
 
   const statusSteps = useMemo(
     () => [
@@ -63,6 +69,59 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (activeTrip?.autoSimulate) {
+      setIsAutoSim(true);
+    }
+  }, [activeTrip?.autoSimulate]);
+
+  useEffect(() => {
+    if (!isAutoSim || !activeTripRef.current) {
+      return undefined;
+    }
+
+    if (currentStatus === 'accepted') {
+      setSimBanner('Auto-simulación: llegando por el pasajero (2s)...');
+      const timeoutId = setTimeout(() => {
+        updateTripStatus('driver_arriving');
+      }, 2000);
+      return () => clearTimeout(timeoutId);
+    }
+
+    if (currentStatus === 'driver_arriving') {
+      setSimBanner('Auto-simulación: pasajero abordando (2s)...');
+      const timeoutId = setTimeout(() => {
+        updateTripStatus('in_progress');
+      }, 2000);
+      return () => clearTimeout(timeoutId);
+    }
+
+    if (currentStatus === 'in_progress') {
+      let remaining = 10;
+      setSimBanner(`Auto-simulación: en ruta al destino (${remaining}s)...`);
+      const intervalId = setInterval(() => {
+        remaining -= 1;
+        if (remaining > 0) {
+          setSimBanner(`Auto-simulación: en ruta al destino (${remaining}s)...`);
+        } else {
+          clearInterval(intervalId);
+          setSimBanner('¡Destino alcanzado! Procesando cobro...');
+          updateTripStatus('completed', {
+            completedAt: new Date().toISOString(),
+            durationSeconds: elapsedSecondsRef.current || 10,
+            autoSimulate: true,
+          });
+          if (onTripFinished) {
+            onTripFinished(activeTripRef.current);
+          }
+        }
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+
+    return undefined;
+  }, [isAutoSim, currentStatus, updateTripStatus, onTripFinished]);
 
   const formatTimer = (totalSec) => {
     const mins = Math.floor(totalSec / 60);
@@ -113,7 +172,7 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
 
   if (currentStatus === 'driver_arriving') {
     actionButtonLabel = 'Iniciar Viaje (Pasajero a Bordo)';
-    actionButtonColor = colors.exito;
+    actionButtonColor = colors.primario;
     actionIcon = 'play-outline';
   } else if (currentStatus === 'in_progress') {
     actionButtonLabel = 'Completar Viaje';
@@ -196,7 +255,7 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           <View style={{ flex: 1, marginLeft: spacing.sm }}>
             <Text style={styles.passengerName}>{passenger?.name || 'Pasajero'}</Text>
             <View style={styles.passengerRatingRow}>
-              <Ionicons name="star" size={14} color={colors.alerta} />
+              <Ionicons name="star" size={14} color={colors.dorado} />
               <Text style={styles.ratingNumber}>{passenger?.rating || '5.0'}</Text>
               <Text style={styles.paymentMethodText}>
                 • Pago: {activeTrip?.paymentMethod === 'cash' ? 'Efectivo' : 'Mercado Pago'}
@@ -234,6 +293,13 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           </View>
         </View>
 
+        {simBanner ? (
+          <View style={styles.simBannerBox}>
+            <Ionicons name="speedometer-outline" size={16} color={colors.dorado} />
+            <Text style={styles.simBannerText}>{simBanner}</Text>
+          </View>
+        ) : null}
+
         <TouchableOpacity
           style={[styles.mainActionButton, { backgroundColor: actionButtonColor }]}
           onPress={handleNextStatus}
@@ -242,6 +308,17 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
           <Ionicons name={actionIcon} size={22} color={colors.fondo} style={{ marginRight: spacing.xs }} />
           <Text style={styles.mainActionButtonText}>{actionButtonLabel}</Text>
         </TouchableOpacity>
+
+        {!isAutoSim && currentStatus !== 'completed' && (
+          <TouchableOpacity
+            style={styles.autoSimTriggerButton}
+            onPress={() => setIsAutoSim(true)}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="flash-outline" size={16} color={colors.dorado} />
+            <Text style={styles.autoSimTriggerText}>Auto-simular resto del viaje (10s)</Text>
+          </TouchableOpacity>
+        )}
 
         {canCancel && (
           <TouchableOpacity
@@ -499,5 +576,40 @@ const styles = StyleSheet.create({
     color: colors.peligro,
     fontSize: typography.tamanios.sm,
     fontWeight: '600',
+  },
+  simBannerBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: 'rgba(234, 179, 8, 0.14)',
+    borderWidth: 1,
+    borderColor: colors.dorado,
+    borderRadius: radius.md,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  simBannerText: {
+    color: colors.dorado,
+    fontSize: typography.tamanios.xs,
+    fontWeight: '700',
+  },
+  autoSimTriggerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.dorado,
+    backgroundColor: colors.fondo,
+  },
+  autoSimTriggerText: {
+    color: colors.dorado,
+    fontSize: typography.tamanios.xs,
+    fontWeight: '700',
   },
 });

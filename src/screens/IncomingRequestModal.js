@@ -10,6 +10,7 @@ export default function IncomingRequestModal({
   progressPercent = 100,
   onAccept,
   onReject,
+  onGoOffline,
 }) {
   if (!visible || !request) return null;
 
@@ -82,7 +83,7 @@ export default function IncomingRequestModal({
             <View style={styles.passengerInfo}>
               <Text style={styles.passengerName}>{passenger?.name || 'Pasajero'}</Text>
               <View style={styles.ratingRow}>
-                <Ionicons name="star" size={14} color={colors.alerta} />
+                <Ionicons name="star" size={14} color={colors.dorado} />
                 <Text style={styles.ratingText}>{passenger?.rating || '5.0'}</Text>
                 <Text style={styles.tripsCountText}>({passenger?.tripsCount || 0} viajes)</Text>
               </View>
@@ -136,6 +137,17 @@ export default function IncomingRequestModal({
               <Text style={styles.acceptButtonText}>Aceptar Viaje</Text>
             </TouchableOpacity>
           </View>
+
+          {onGoOffline && (
+            <TouchableOpacity
+              style={styles.goOfflineButton}
+              onPress={onGoOffline}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="power" size={16} color={colors.textoSuave} />
+              <Text style={styles.goOfflineText}>Rechazar y ponerse Fuera de Línea</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </Modal>
@@ -323,7 +335,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: radius.full,
-    backgroundColor: colors.exito,
+    backgroundColor: colors.primario,
   },
   routeLine: {
     width: 2,
@@ -389,5 +401,22 @@ const styles = StyleSheet.create({
     color: colors.fondo,
     fontSize: typography.tamanios.md,
     fontWeight: '800',
+  },
+  goOfflineButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.borde,
+    backgroundColor: colors.fondo,
+  },
+  goOfflineText: {
+    color: colors.textoSuave,
+    fontSize: typography.tamanios.xs,
+    fontWeight: '700',
   },
 });

@@ -30,7 +30,7 @@ export default function PersonalTabScreen({ formData, onChangeData, isSubmitted 
       <FormField
         label="Nombre completo*"
         value={formData.fullName}
-        onChangeText={(text) => onChangeData({ fullName: text })}
+        onChangeText={(text) => onChangeData({ fullName: text.replace(/\d/g, '').slice(0, 50) })}
         placeholder="Ej. Juan Carlos Pérez"
         maxLength={50}
         error={errors.fullName}

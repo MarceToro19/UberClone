@@ -20,7 +20,6 @@ const FILTERS = [
   { id: 'paid', label: 'Pagados' },
   { id: 'cancelled', label: 'Cancelados' },
   { id: 'cash', label: 'Efectivo' },
-  { id: 'gateway', label: 'Pasarela' },
 ];
 
 function formatDateLabel(trip) {

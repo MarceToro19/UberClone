@@ -266,3 +266,91 @@ Archivos y commit: src/context/DriverSessionContext.js, src/hooks/useEarnings.js
 Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
 
 Aprendizaje: Centralizar los cálculos financieros en `useEarnings` con `useMemo` y la escucha `onSnapshot` con limpieza en `useEffect` mantiene sincronizados saldo, ganancias e historial sin duplicar consultas ni fugas de listeners.
+
+Entrada #13
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Bloquear el ingreso de dígitos numéricos en tiempo real dentro del campo `Nombre completo*` en la pestaña de Datos Personales.
+
+Prompt: "en el campo nombre completo la validacion no deja pasar si se ingresa un numero entonces no permitas iungresar numeros en ese campo"
+
+Resumen de la respuesta: Se actualizó el manejador `onChangeText` del campo `Nombre completo*` en `src/screens/register/PersonalTabScreen.js` para depurar dígitos (`\d`) y limitar a 50 caracteres al instante, manteniendo las reglas de `registerValidators.js`.
+
+Qué se usó / modificó / descartó: Se aplicó `.replace(/\d/g, '').slice(0, 50)` en el input en lugar de eliminar todos los signos para no interferir con teclas muertas de tildes en teclados físicos/web, dejando la validación final de solo letras en `validatePersonalTab`.
+
+Archivos y commit: src/screens/register/PersonalTabScreen.js, docs/AI_LOG.md — Commit fix bloqueo de números en nombre completo.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Filtrar dígitos directamente en `onChangeText` evita errores de captura temprana sin afectar la composición de caracteres acentuados.
+
+Entrada #14
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Agregar botón de desconexión rápida ("Fuera de Línea") accesible desde notificaciones y menú lateral, e implementar la simulación automática completa de viaje de 10 segundos con cobro y abono a saldo en Firestore.
+
+Prompt: "sia grewga el boton y tambien el de colocar fuera de linea que me esta tocando cambiar la aprobacion para que dejen de lelgar notificaicones"
+
+Resumen de la respuesta: Se añadió el botón "Rechazar y ponerse Fuera de Línea" en `IncomingRequestModal.js`, un acceso directo de disponibilidad en `DriverDrawer.js`, el botón "Simular Carrera Completa (10s)" con pago por pasarela en `HomeScreen.js`, la máquina de simulación temporizada (2s recogida, 2s abordaje, 10s recorrido) en `ActiveTripScreen.js` y el autocobro en `TripSummaryScreen.js` con limpieza de todos los temporizadores en `useEffect`.
+
+Qué se usó / modificó / descartó: Se utilizaron `setTimeout` y `setInterval` controlados con referencias (`elapsedSecondsRef`, `activeTripRef`, `confirmHandlerRef`) y limpieza en `useEffect`, corrigiendo además referencias de color inexistentes (`colors.exito`, `colors.alerta`) por tokens válidos de `src/theme/index.js`.
+
+Archivos y commit: src/screens/IncomingRequestModal.js, src/navigation/DriverDrawer.js, src/screens/HomeScreen.js, src/screens/ActiveTripScreen.js, src/screens/TripSummaryScreen.js, docs/AI_LOG.md — Commit feat simulación automática de carrera 10s y botón fuera de línea.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Ofrecer el control de desconexión directamente dentro del modal de solicitud entrante y del menú lateral evita que el conductor quede atrapado en el ciclo de solicitudes cada 5 segundos.
+
+Entrada #15
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Resolver el error `BillingNotEnabledMapError` y la advertencia `loading=async` de Google Maps Web mediante carga asíncrona oficial y respaldo automático gratuito con OpenStreetMap/Leaflet.
+
+Prompt: "sale este error error: BillingNotEnabledMapError"
+
+Resumen de la respuesta: Se actualizó `src/components/DriverMapView.web.js` para cargar Google Maps con `loading=async&callback=__initUberCloneMap` y capturar `window.gm_authFailure`, cambiando automáticamente al mapa gratuito oscuro (Leaflet + CartoDB Dark / OpenStreetMap) con el mismo marcador de carro rojo y limpieza completa en `useEffect`.
+
+Qué se usó / modificó / descartó: Se evitó agregar librerías nativas o dependencias pesadas en `package.json`, resolviendo el respaldo en Web directamente con Leaflet CDN cuando Google Cloud bloquea la API Key por falta de cuenta de facturación.
+
+Archivos y commit: src/components/DriverMapView.web.js, docs/AI_LOG.md — Commit fix respaldo gratuito de mapa web ante BillingNotEnabledMapError.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Capturar `window.gm_authFailure` permite degradar graciosamente de Google Maps Web a mapas libres sin facturación conservando marcador, tema oscuro y seguimiento GPS en vivo.
+
+Entrada #16
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Dejar el flujo operativo y de simulación de viajes únicamente con cobro en efectivo (`cash`), sin simular cobros por pasarela de Mercado Pago.
+
+Prompt: "como no se tiene lo del pago de mercado pago dejemos solo lo del efectivo"
+
+Resumen de la respuesta: Se actualizaron todas las solicitudes de `src/data/mockTripRequests.js` a `paymentMethod: 'cash'`, se ajustó `handleSimulateFullTrip` en `HomeScreen.js` para operar en efectivo, y se actualizaron los indicadores de `EarningsScreen.js` y filtros de `TripHistoryScreen.js` enfocándolos en efectivo (conservando el campo de correo de registro exigido por el PDF).
+
+Qué se usó / modificó / descartó: Se mantuvo el campo `mercadoPagoEmail` únicamente en el registro (Pestaña 3) para no romper la Sección 3.1 del PDF, mientras el flujo operativo de viajes simula únicamente pagos en efectivo y su descuento del 20% de comisión en saldo.
+
+Archivos y commit: src/data/mockTripRequests.js, src/screens/HomeScreen.js, src/screens/EarningsScreen.js, src/screens/TripHistoryScreen.js, docs/AI_LOG.md — Commit feat restringir cobro operativo de viajes a efectivo.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: En cobros en efectivo el conductor recibe el total en mano (conservando su ganancia neta) y la app descuenta el 20% de comisión de su saldo interno según la Sección 6 del PDF.

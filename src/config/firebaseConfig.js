@@ -10,6 +10,8 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || '',
 };
 
+const databaseId = process.env.EXPO_PUBLIC_FIREBASE_DATABASE_ID || '';
+
 export const isFirebaseConfigured = Boolean(
   firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId
 );
@@ -19,7 +21,7 @@ let db = null;
 
 if (isFirebaseConfigured) {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
 }
 
 export { app, db };
