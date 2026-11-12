@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,15 @@ export default function TripSummaryScreen({ onFinishSummary }) {
 
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [tipAmount, setTipAmount] = useState(0);
+  const finishTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (finishTimeoutRef.current) {
+        clearTimeout(finishTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!activeTrip) {
     return (
@@ -34,21 +43,23 @@ export default function TripSummaryScreen({ onFinishSummary }) {
   const totalCustomerFare = (pricing?.tarifaBruta || 0) + tipAmount;
   const commission = pricing?.comision || 0;
 
-  const handleConfirmAndClose = () => {
+  const handleConfirmAndClose = async () => {
+    if (paymentConfirmed) return;
+    setPaymentConfirmed(true);
+
     const balanceDelta = isCash ? -commission : finalDriverEarnings;
     const nextBalance = (balance || 0) + balanceDelta;
-    setBalance(nextBalance);
+    await setBalance(nextBalance);
 
-    updateTripStatus('paid', {
+    await updateTripStatus('paid', {
       paidAt: new Date().toISOString(),
       balanceDelta,
       finalEarnings: finalDriverEarnings,
       tipAmount,
+      commissionAmount: commission,
     });
 
-    setPaymentConfirmed(true);
-
-    setTimeout(() => {
+    finishTimeoutRef.current = setTimeout(() => {
       clearActiveTrip();
       if (onFinishSummary) {
         onFinishSummary();

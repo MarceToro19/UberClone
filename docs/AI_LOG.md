@@ -222,3 +222,25 @@ Archivos y commit: src/services/locationService.js, src/hooks/useDriverLocation.
 Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
 
 Aprendizaje: Separar el `useEffect` de limpieza de disponibilidad/desmontaje del `useEffect` que envía coordenadas con throttle evita marcar falsamente al conductor como desconectado entre cada actualización de GPS y optimiza escrituras en el plan Spark.
+
+Entrada #11
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Persistir el ciclo completo de viajes (`accepted`, `driver_arriving`, `in_progress`, `completed`, `paid`, `cancelled`) en la colección `trips` de Firestore y sincronizar la actualización de saldo del conductor en `drivers`.
+
+Prompt: "commit realizado"
+
+Resumen de la respuesta: Se completó el Hito 4 creando `src/services/tripService.js` (`createTripRecord`, `updateTripRecord`, `fetchDriverTrips`, `subscribeToDriverTrips`) sin requerir índices compuestos manuales en Firestore, conectando `ActiveTripContext.js` con el `driverId` de sesión y actualizando `TripSummaryScreen.js` para registrar el cobro y la limpieza segura de temporizadores.
+
+Qué se usó / modificó / descartó: Se asignó un identificador único `trip_${Date.now()}` por viaje conservando `requestId` para evitar sobrescribir viajes previos de la misma solicitud simulada, y se ordenaron los viajes del historial en cliente para operar sin índices compuestos en el plan gratuito Spark.
+
+Archivos y commit: src/services/tripService.js, src/context/ActiveTripContext.js, src/screens/TripSummaryScreen.js, docs/AI_LOG.md — Commit Hito 4 Persistencia de viajes y saldo en Firestore.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Generar IDs de viaje únicos por ejecución y utilizar `setDoc(..., { merge: true })` garantiza trazabilidad histórica en `trips` incluso si ocurren transiciones rápidas de estado o desconexiones temporales.
