@@ -7,6 +7,7 @@ import {
   updateDriverFields,
   subscribeToDriverProfile,
 } from '../services/driverService';
+import { markDriverLocationOffline } from '../services/locationService';
 
 export const DriverSessionContext = createContext(null);
 
@@ -44,10 +45,11 @@ export const INITIAL_REGISTER_FORM = {
 };
 
 export function DriverSessionProvider({ children }) {
-  const [driverProfile, setDriverProfile] = useAlmacenamiento('@driver_profile', null);
-  const [approvalStatus, setApprovalStatus] = useAlmacenamiento('@driver_approval_status', DRIVER_STATUS.PENDING_APPROVAL);
-  const [isAvailable, setIsAvailableLocal] = useAlmacenamiento('@driver_is_available', false);
-  const [balance, setBalanceLocal] = useAlmacenamiento('@driver_balance', 0);
+  const [driverProfile, setDriverProfile, , removeDriverProfile] = useAlmacenamiento('@driver_profile', null);
+  const [approvalStatus, setApprovalStatus, , removeApprovalStatus] = useAlmacenamiento('@driver_approval_status', DRIVER_STATUS.PENDING_APPROVAL);
+  const [isAvailable, setIsAvailableLocal, , removeIsAvailable] = useAlmacenamiento('@driver_is_available', false);
+  const [balance, setBalanceLocal, , removeBalance] = useAlmacenamiento('@driver_balance', 0);
+  const [language, setLanguageLocal] = useAlmacenamiento('@driver_language', 'es');
 
   const [registerForm, setRegisterForm] = useState(INITIAL_REGISTER_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,6 +180,57 @@ export function DriverSessionProvider({ children }) {
     }
   }, [approvalStatus, driverProfile?.id, setApprovalStatus, setIsAvailableLocal]);
 
+  const setLanguage = useCallback(
+    async (nextLanguage) => {
+      const normalized = nextLanguage === 'en' ? 'en' : 'es';
+      await setLanguageLocal(normalized);
+      if (driverProfile?.id) {
+        const updatedProfile = {
+          ...driverProfile,
+          personal: {
+            ...driverProfile.personal,
+            language: normalized,
+          },
+        };
+        await setDriverProfile(updatedProfile);
+        try {
+          await updateDriverFields(driverProfile.id, {
+            'personal.language': normalized,
+          });
+        } catch (error) {
+          console.warn('Error actualizando idioma en Firestore:', error.message);
+        }
+      }
+    },
+    [driverProfile, setDriverProfile, setLanguageLocal]
+  );
+
+  const logoutDriver = useCallback(async () => {
+    const activeDriverId = driverProfile?.id;
+    if (activeDriverId) {
+      try {
+        await updateDriverFields(activeDriverId, { isAvailable: false });
+        await markDriverLocationOffline(activeDriverId);
+      } catch (error) {
+        console.warn('Error cerrando sesión en Firestore:', error.message);
+      }
+    }
+
+    await Promise.all([
+      removeDriverProfile(),
+      removeApprovalStatus(),
+      removeIsAvailable(),
+      removeBalance(),
+    ]);
+    setRegisterForm(INITIAL_REGISTER_FORM);
+  }, [
+    driverProfile?.id,
+    removeDriverProfile,
+    removeApprovalStatus,
+    removeIsAvailable,
+    removeBalance,
+  ]);
+
   const value = useMemo(
     () => ({
       driverProfile,
@@ -186,10 +239,13 @@ export function DriverSessionProvider({ children }) {
       setIsAvailable,
       balance,
       setBalance,
+      language,
+      setLanguage,
       registerForm,
       updateFormTab,
       submitRegistration,
       simulateToggleApproval,
+      logoutDriver,
       isSubmitting,
       isRegistered: !!driverProfile,
       isApproved: approvalStatus === DRIVER_STATUS.APPROVED,
@@ -201,10 +257,13 @@ export function DriverSessionProvider({ children }) {
       setIsAvailable,
       balance,
       setBalance,
+      language,
+      setLanguage,
       registerForm,
       updateFormTab,
       submitRegistration,
       simulateToggleApproval,
+      logoutDriver,
       isSubmitting,
     ]
   );

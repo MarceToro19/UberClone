@@ -244,3 +244,25 @@ Archivos y commit: src/services/tripService.js, src/context/ActiveTripContext.js
 Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
 
 Aprendizaje: Generar IDs de viaje únicos por ejecución y utilizar `setDoc(..., { merge: true })` garantiza trazabilidad histórica en `trips` incluso si ocurren transiciones rápidas de estado o desconexiones temporales.
+
+Entrada #12
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Completar los módulos restantes del conductor (Ganancias con `useEarnings.js`, Historial paginado con filtros y modal de detalle, Perfil con idioma y cierre de sesión) y conectar la arquitectura oficial de navegación (`RootNavigator`, `RegisterTabs`, `TripStack`, `DriverDrawer`) en `App.js`.
+
+Prompt: "commit realizado"
+
+Resumen de la respuesta: Se completó el Hito 5 creando el hook `useEarnings.js` con cálculo memoizado (`useMemo`) por día, semana y mes desde `subscribeToDriverTrips`, las pantallas `EarningsScreen.js`, `TripHistoryScreen.js` (paginación de 20 en 20, filtros y modal de detalle) y `ProfileScreen.js` (cambio de idioma en `AsyncStorage`/Firestore y `logoutDriver`), además de los navegadores `RootNavigator.js`, `RegisterTabs.js`, `TripStack.js` y `DriverDrawer.js` conectados en `App.js`.
+
+Qué se usó / modificó / descartó: Se utilizó `@react-navigation/native`, `@react-navigation/native-stack` y `@react-navigation/bottom-tabs` ya instalados junto con un menú lateral modal en `DriverDrawer.js`, descartando instalar paquetes extra de Reanimated/Drawer para evitar conflictos en Metro/Web.
+
+Archivos y commit: src/context/DriverSessionContext.js, src/hooks/useEarnings.js, src/screens/EarningsScreen.js, src/screens/TripHistoryScreen.js, src/screens/ProfileScreen.js, src/navigation/RootNavigator.js, src/navigation/RegisterTabs.js, src/navigation/TripStack.js, src/navigation/DriverDrawer.js, App.js, docs/AI_LOG.md — Commit Hito 5 Pantallas de ganancias, historial, perfil y navegación oficial.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Centralizar los cálculos financieros en `useEarnings` con `useMemo` y la escucha `onSnapshot` con limpieza en `useEffect` mantiene sincronizados saldo, ganancias e historial sin duplicar consultas ni fugas de listeners.
