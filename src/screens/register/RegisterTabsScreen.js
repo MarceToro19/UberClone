@@ -15,7 +15,7 @@ import { colors, spacing, radius, typography } from '../../theme';
 
 export default function RegisterTabsScreen({ onRegistrationSuccess }) {
   const insets = useSafeAreaInsets();
-  const { registerForm, updateFormTab, submitRegistration } = useDriverSession();
+  const { registerForm, updateFormTab, submitRegistration, isSubmitting } = useDriverSession();
   const [activeTab, setActiveTab] = useState('personal');
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
@@ -36,10 +36,10 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
 
   const isAllValid = isPersonalValid && isVehicleValid && isDocumentsValid;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setHasAttemptedSubmit(true);
-    if (isAllValid) {
-      submitRegistration();
+    if (isAllValid && !isSubmitting) {
+      await submitRegistration();
       if (onRegistrationSuccess) {
         onRegistrationSuccess();
       }
@@ -140,14 +140,14 @@ export default function RegisterTabsScreen({ onRegistrationSuccess }) {
         </View>
 
         <TouchableOpacity
-          style={[styles.submitButton, !isAllValid && styles.submitButtonDisabled]}
+          style={[styles.submitButton, (!isAllValid || isSubmitting) && styles.submitButtonDisabled]}
           onPress={handleSubmit}
-          disabled={!isAllValid}
+          disabled={!isAllValid || isSubmitting}
           activeOpacity={0.85}
         >
-          <Ionicons name="cloud-upload-outline" size={20} color={isAllValid ? colors.blanco : colors.textoSuave} style={{ marginRight: spacing.sm }} />
-          <Text style={[styles.submitButtonText, !isAllValid && styles.submitButtonTextDisabled]}>
-            Enviar registro
+          <Ionicons name="cloud-upload-outline" size={20} color={isAllValid && !isSubmitting ? colors.blanco : colors.textoSuave} style={{ marginRight: spacing.sm }} />
+          <Text style={[styles.submitButtonText, (!isAllValid || isSubmitting) && styles.submitButtonTextDisabled]}>
+            {isSubmitting ? 'Enviando registro...' : 'Enviar registro'}
           </Text>
         </TouchableOpacity>
       </View>

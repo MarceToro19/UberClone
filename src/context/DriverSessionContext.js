@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import useAlmacenamiento from '../hooks/useAlmacenamiento';
 import { DRIVER_STATUS } from '../config/pricing';
+import { uploadDriverPhotos } from '../services/cloudinaryService';
+import {
+  saveDriverRegistration,
+  updateDriverFields,
+  subscribeToDriverProfile,
+} from '../services/driverService';
 
 export const DriverSessionContext = createContext(null);
 
@@ -40,12 +46,51 @@ export const INITIAL_REGISTER_FORM = {
 export function DriverSessionProvider({ children }) {
   const [driverProfile, setDriverProfile] = useAlmacenamiento('@driver_profile', null);
   const [approvalStatus, setApprovalStatus] = useAlmacenamiento('@driver_approval_status', DRIVER_STATUS.PENDING_APPROVAL);
-  const [isAvailable, setIsAvailable] = useAlmacenamiento('@driver_is_available', false);
-  const [balance, setBalance] = useAlmacenamiento('@driver_balance', 0);
+  const [isAvailable, setIsAvailableLocal] = useAlmacenamiento('@driver_is_available', false);
+  const [balance, setBalanceLocal] = useAlmacenamiento('@driver_balance', 0);
 
   const [registerForm, setRegisterForm] = useState(INITIAL_REGISTER_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateFormTab = (tab, data) => {
+  const latestRef = useRef({ approvalStatus, isAvailable, balance });
+  latestRef.current = { approvalStatus, isAvailable, balance };
+
+  useEffect(() => {
+    const driverId = driverProfile?.id;
+    if (!driverId) return;
+
+    const unsubscribe = subscribeToDriverProfile(
+      driverId,
+      (remoteDriver) => {
+        const current = latestRef.current;
+
+        if (remoteDriver.approvalStatus && remoteDriver.approvalStatus !== current.approvalStatus) {
+          setApprovalStatus(remoteDriver.approvalStatus);
+        }
+
+        if (remoteDriver.approvalStatus && remoteDriver.approvalStatus !== DRIVER_STATUS.APPROVED) {
+          if (current.isAvailable) {
+            setIsAvailableLocal(false);
+          }
+        } else if (typeof remoteDriver.isAvailable === 'boolean' && remoteDriver.isAvailable !== current.isAvailable) {
+          setIsAvailableLocal(remoteDriver.isAvailable);
+        }
+
+        if (typeof remoteDriver.balance === 'number' && remoteDriver.balance !== current.balance) {
+          setBalanceLocal(remoteDriver.balance);
+        }
+      },
+      (error) => {
+        console.warn('Error escuchando perfil del conductor en Firestore:', error.message);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [driverProfile?.id, setApprovalStatus, setIsAvailableLocal, setBalanceLocal]);
+
+  const updateFormTab = useCallback((tab, data) => {
     setRegisterForm((prev) => ({
       ...prev,
       [tab]: {
@@ -53,29 +98,85 @@ export function DriverSessionProvider({ children }) {
         ...data,
       },
     }));
-  };
+  }, []);
 
-  const submitRegistration = () => {
-    const newProfile = {
-      ...registerForm,
-      id: 'driver_' + Date.now(),
-      registeredAt: new Date().toISOString(),
-    };
-    setDriverProfile(newProfile);
-    setApprovalStatus(DRIVER_STATUS.PENDING_APPROVAL);
-    setIsAvailable(false);
-  };
+  const setIsAvailable = useCallback(
+    async (nextValue) => {
+      setIsAvailableLocal(nextValue);
+      if (driverProfile?.id) {
+        try {
+          await updateDriverFields(driverProfile.id, { isAvailable: nextValue });
+        } catch (error) {
+          console.warn('Error actualizando disponibilidad en Firestore:', error.message);
+        }
+      }
+    },
+    [driverProfile?.id, setIsAvailableLocal]
+  );
 
-  const simulateToggleApproval = () => {
+  const setBalance = useCallback(
+    async (nextBalance) => {
+      setBalanceLocal(nextBalance);
+      if (driverProfile?.id) {
+        try {
+          await updateDriverFields(driverProfile.id, { balance: nextBalance });
+        } catch (error) {
+          console.warn('Error actualizando saldo en Firestore:', error.message);
+        }
+      }
+    },
+    [driverProfile?.id, setBalanceLocal]
+  );
+
+  const submitRegistration = useCallback(async () => {
+    setIsSubmitting(true);
+    try {
+      const formWithUrls = await uploadDriverPhotos(registerForm);
+      const newProfile = {
+        ...formWithUrls,
+        id: 'driver_' + Date.now(),
+        registeredAt: new Date().toISOString(),
+      };
+
+      await setDriverProfile(newProfile);
+      await setApprovalStatus(DRIVER_STATUS.PENDING_APPROVAL);
+      await setIsAvailableLocal(false);
+      await setBalanceLocal(0);
+
+      try {
+        await saveDriverRegistration(newProfile.id, newProfile);
+      } catch (error) {
+        console.warn('Error guardando conductor en Firestore:', error.message);
+      }
+
+      return newProfile;
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [registerForm, setDriverProfile, setApprovalStatus, setIsAvailableLocal, setBalanceLocal]);
+
+  const simulateToggleApproval = useCallback(async () => {
     const nextStatus =
       approvalStatus === DRIVER_STATUS.APPROVED
         ? DRIVER_STATUS.PENDING_APPROVAL
         : DRIVER_STATUS.APPROVED;
+
     setApprovalStatus(nextStatus);
+    const updates = { approvalStatus: nextStatus };
+
     if (nextStatus !== DRIVER_STATUS.APPROVED) {
-      setIsAvailable(false);
+      setIsAvailableLocal(false);
+      updates.isAvailable = false;
     }
-  };
+
+    if (driverProfile?.id) {
+      try {
+        await updateDriverFields(driverProfile.id, updates);
+      } catch (error) {
+        console.warn('Error simulando aprobación en Firestore:', error.message);
+      }
+    }
+  }, [approvalStatus, driverProfile?.id, setApprovalStatus, setIsAvailableLocal]);
 
   const value = useMemo(
     () => ({
@@ -89,10 +190,23 @@ export function DriverSessionProvider({ children }) {
       updateFormTab,
       submitRegistration,
       simulateToggleApproval,
+      isSubmitting,
       isRegistered: !!driverProfile,
       isApproved: approvalStatus === DRIVER_STATUS.APPROVED,
     }),
-    [driverProfile, approvalStatus, isAvailable, balance, registerForm]
+    [
+      driverProfile,
+      approvalStatus,
+      isAvailable,
+      setIsAvailable,
+      balance,
+      setBalance,
+      registerForm,
+      updateFormTab,
+      submitRegistration,
+      simulateToggleApproval,
+      isSubmitting,
+    ]
   );
 
   return (

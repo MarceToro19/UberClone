@@ -155,3 +155,48 @@ Archivos y commit: src/config/mapsConfig.js, app.json, src/components/DriverMapV
 Verificación: Metro Bundler empaquetó 320 módulos con código de salida 0 sin ningún error; visualización y rotación correcta del marcador en el mapa web.
 
 Aprendizaje: Cargar Google Maps JavaScript API de manera asíncrona con script dinámico en entornos web de React Native/Expo permite utilizar la API oficial sin perder compatibilidad ni requerir paquetes pesados adicionales.
+
+Entrada #8
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Configurar la base segura de Firebase (Cloud Firestore) mediante variables de entorno y preparar la estructura de conexión para el plan gratuito Spark.
+
+Prompt: "procedamos con la implementacion indicame en que puntos necesitas que participe o si es necesario crear alguna cuenta tambien indicame los pasos a seguir para cumplir con los lineamientos"
+
+Resumen de la respuesta: Se instaló el SDK oficial de `firebase`, se creó la plantilla `.env.example` sin valores sensibles (conforme a la Sección 4 del PDF) y se configuró `src/config/firebaseConfig.js` leyendo `EXPO_PUBLIC_FIREBASE_*` con inicialización condicional segura, además de detallar los pasos para crear la cuenta en Firebase (Plan Spark) y Cloudinary.
+
+Qué se usó / modificó / descartó: Se adoptó Firebase Cloud Firestore como base de datos en tiempo real junto con variables de entorno protegidas en `.gitignore`. Se descartó Firebase Storage por requerir plan Blaze, dejando prevista la integración gratuita con Cloudinary.
+
+Archivos y commit: package.json, package-lock.json, .env.example, src/config/firebaseConfig.js, docs/AI_LOG.md — Commit Configuración base de Firebase.
+
+Verificación: Importación de `src/config/firebaseConfig.js` verificada en Node (`isFirebaseConfigured: false`, `db: null` sin errores al no existir `.env`) y compilación verificada con Metro Bundler.
+
+Aprendizaje: Separar las llaves de Firebase en variables de entorno `EXPO_PUBLIC_*` con una bandera `isFirebaseConfigured` evita exponer credenciales en el repositorio y permite que la app siga operando sin fallar mientras se configuran las cuentas externas.
+
+Entrada #9
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Conectar el registro del conductor y el estado de aprobación en tiempo real con Cloud Firestore (colección `drivers`) y preparar la subida de imágenes con Cloudinary.
+
+Prompt: "informacion de fire base ... informacion de Cloudinary ... uberClone Unsigned"
+
+Resumen de la respuesta: Se configuró el archivo `.env` local (excluido de Git) con las credenciales del proyecto `uberclone-b61c1` y el preset `uberClone`, se creó `src/services/cloudinaryService.js` para subir imágenes locales y `src/services/driverService.js` para persistir y suscribirse con `onSnapshot` a la colección `drivers`, integrándolos en `DriverSessionContext.js` y `RegisterTabsScreen.js`.
+
+Qué se usó / modificó / descartó: Se utilizó `setDoc`, `updateDoc` y `onSnapshot` de Firebase Firestore con limpieza obligatoria de la suscripción en `useEffect`. Se evitó reescribir valores idénticos usando una referencia `latestRef` para no generar bucles de escritura en `AsyncStorage`.
+
+Archivos y commit: src/services/cloudinaryService.js, src/services/driverService.js, src/context/DriverSessionContext.js, src/screens/register/RegisterTabsScreen.js, docs/AI_LOG.md — Commit Hito 2 Integración Firestore y Cloudinary en registro.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Usar `onSnapshot` en `useEffect` con limpieza (`return () => unsubscribe()`) permite reflejar en tiempo real la aprobación del conductor (`pending_approval` → `approved`) al modificar el documento directamente en Firebase Console.
+
