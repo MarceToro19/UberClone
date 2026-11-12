@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
+import {
+  syncDriverLocation,
+  markDriverLocationOffline,
+} from '../services/locationService';
 
-export default function useDriverLocation(isAvailable = false) {
+export default function useDriverLocation(isAvailable = false, syncOptions = {}) {
+  const driverId = syncOptions?.driverId || null;
+  const category = syncOptions?.category || null;
+  const activeTripId = syncOptions?.activeTripId || null;
+
   const [location, setLocation] = useState({
     latitude: 4.60971,
     longitude: -74.08175,
@@ -10,9 +18,12 @@ export default function useDriverLocation(isAvailable = false) {
   });
   const [errorMsg, setErrorMsg] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
+  const [isCloudSyncActive, setIsCloudSyncActive] = useState(false);
 
   const watchIdRef = useRef(null);
   const intervalIdRef = useRef(null);
+  const lastSyncRef = useRef(0);
+  const hasSyncedOnlineRef = useRef(false);
 
   useEffect(() => {
     if (!isAvailable) {
@@ -73,9 +84,60 @@ export default function useDriverLocation(isAvailable = false) {
     };
   }, [isAvailable]);
 
+  useEffect(() => {
+    if (!isAvailable || !driverId) {
+      lastSyncRef.current = 0;
+      setIsCloudSyncActive(false);
+      if (driverId && !isAvailable && hasSyncedOnlineRef.current) {
+        hasSyncedOnlineRef.current = false;
+        markDriverLocationOffline(driverId).catch((err) => {
+          console.warn('Error marcando ubicación desconectada en Firestore:', err.message);
+        });
+      }
+      return undefined;
+    }
+
+    return () => {
+      lastSyncRef.current = 0;
+      setIsCloudSyncActive(false);
+      if (hasSyncedOnlineRef.current) {
+        hasSyncedOnlineRef.current = false;
+        markDriverLocationOffline(driverId).catch((err) => {
+          console.warn('Error limpiando ubicación en Firestore:', err.message);
+        });
+      }
+    };
+  }, [isAvailable, driverId]);
+
+  useEffect(() => {
+    if (!isAvailable || !driverId) return;
+
+    const now = Date.now();
+    if (lastSyncRef.current !== 0 && now - lastSyncRef.current < 3500) {
+      return;
+    }
+
+    lastSyncRef.current = now;
+    syncDriverLocation(driverId, location, {
+      isAvailable: true,
+      category,
+      activeTripId,
+    })
+      .then((synced) => {
+        if (synced) {
+          hasSyncedOnlineRef.current = true;
+          setIsCloudSyncActive(true);
+        }
+      })
+      .catch((err) => {
+        console.warn('Error sincronizando ubicación en Firestore:', err.message);
+      });
+  }, [isAvailable, driverId, category, activeTripId, location]);
+
   return {
     location,
     isTracking,
     errorMsg,
+    isCloudSyncActive,
   };
 }

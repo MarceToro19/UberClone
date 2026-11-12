@@ -200,3 +200,25 @@ Verificación: Compilación verificada con Metro Bundler (`npx expo export --pla
 
 Aprendizaje: Usar `onSnapshot` en `useEffect` con limpieza (`return () => unsubscribe()`) permite reflejar en tiempo real la aprobación del conductor (`pending_approval` → `approved`) al modificar el documento directamente en Firebase Console.
 
+
+Entrada #10
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Sincronizar la ubicación GPS del conductor en tiempo real con la colección `driver_locations` en Cloud Firestore y garantizar su limpieza al desconectarse o desmontar pantallas.
+
+Prompt: "continuemos e implementemos los hitos faltantes para que le proyecto quede al 100%"
+
+Resumen de la respuesta: Se completó el Hito 3 creando `src/services/locationService.js` (`syncDriverLocation` y `markDriverLocationOffline`) sobre `driver_locations/{driverId}`, conectando `useDriverLocation.js` con control de frecuencia mínima de 3.5s para cuidar la cuota gratuita Spark y limpieza obligatoria en `useEffect`, e integrándolo en `HomeScreen.js` y `ActiveTripScreen.js`.
+
+Qué se usó / modificó / descartó: Se utilizó `setDoc` con `{ merge: true }` y `serverTimestamp()` sobre un único documento por conductor (`driver_locations/{driverId}`) para no generar documentos históricos innecesarios. Se evitó escribir el estado desconectado si la instancia no había sincronizado previamente en línea.
+
+Archivos y commit: src/services/locationService.js, src/hooks/useDriverLocation.js, src/screens/HomeScreen.js, src/screens/ActiveTripScreen.js, docs/AI_LOG.md — Commit Hito 3 Sincronización GPS en Firestore.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Separar el `useEffect` de limpieza de disponibilidad/desmontaje del `useEffect` que envía coordenadas con throttle evita marcar falsamente al conductor como desconectado entre cada actualización de GPS y optimiza escrituras en el plan Spark.

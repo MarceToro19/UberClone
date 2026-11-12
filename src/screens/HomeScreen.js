@@ -15,7 +15,10 @@ export default function HomeScreen({ onOpenDrawer, onTripStarted }) {
   const { isAvailable, setIsAvailable, isApproved, driverProfile, balance } = useDriverSession();
   const { hasActiveTrip, startTripFromRequest } = useActiveTrip();
 
-  const { location, isTracking } = useDriverLocation(isAvailable);
+  const { location, isTracking } = useDriverLocation(isAvailable, {
+    driverId: driverProfile?.id,
+    category: driverProfile?.vehicle?.category,
+  });
 
   const handleTripAccepted = useCallback(
     (trip) => {

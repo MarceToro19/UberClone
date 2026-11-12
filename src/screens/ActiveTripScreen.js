@@ -10,11 +10,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useActiveTrip } from '../context/ActiveTripContext';
+import { useDriverSession } from '../context/DriverSessionContext';
+import useDriverLocation from '../hooks/useDriverLocation';
 import DriverMapView from '../components/DriverMapView';
 import { colors, spacing, radius, typography } from '../theme';
 
 export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
   const insets = useSafeAreaInsets();
+  const { driverProfile } = useDriverSession();
   const { activeTrip, updateTripStatus, cancelActiveTrip } = useActiveTrip();
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -32,6 +35,15 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
   );
 
   const currentStatus = activeTrip?.status || 'accepted';
+  const shouldTrackTrip = Boolean(
+    activeTrip && currentStatus !== 'completed' && currentStatus !== 'cancelled'
+  );
+
+  const { location } = useDriverLocation(shouldTrackTrip, {
+    driverId: driverProfile?.id,
+    category: driverProfile?.vehicle?.category,
+    activeTripId: activeTrip?.id,
+  });
 
   useEffect(() => {
     const idx = statusSteps.findIndex((s) => s.key === currentStatus);
@@ -114,14 +126,14 @@ export default function ActiveTripScreen({ onTripFinished, onCancelToHome }) {
   return (
     <View style={styles.container}>
       <DriverMapView
-        location={{
-          coords: {
+        location={
+          location || {
             latitude: currentStatus === 'in_progress' ? destination?.latitude : pickup?.latitude,
             longitude: currentStatus === 'in_progress' ? destination?.longitude : pickup?.longitude,
             heading: 90,
             speed: 35,
-          },
-        }}
+          }
+        }
         isTracking={true}
         isAvailable={true}
       />
