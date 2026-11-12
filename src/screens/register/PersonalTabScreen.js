@@ -20,9 +20,7 @@ export default function PersonalTabScreen({ formData, onChangeData, isSubmitted 
       <PhotoPickerField
         label="Foto de perfil (Obligatoria)*"
         uri={formData.photoUri}
-        onPickPhoto={() => {
-          onChangeData({ photoUri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300' });
-        }}
+        onPickPhoto={(uri) => onChangeData({ photoUri: uri })}
         error={errors.photoUri}
         helper="Toca para cargar tu foto de frente"
       />

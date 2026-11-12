@@ -50,9 +50,7 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
       <PhotoPickerField
         label="Foto de la Licencia de Conducción*"
         uri={formData.licensePhotoUri}
-        onPickPhoto={() => {
-          onChangeData({ licensePhotoUri: 'https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=300' });
-        }}
+        onPickPhoto={(uri) => onChangeData({ licensePhotoUri: uri })}
         error={errors.licensePhotoUri}
         helper="Foto clara del anverso de la licencia"
       />
@@ -74,9 +72,7 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
       <PhotoPickerField
         label="Foto del SOAT vigente*"
         uri={formData.soatPhotoUri}
-        onPickPhoto={() => {
-          onChangeData({ soatPhotoUri: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=300' });
-        }}
+        onPickPhoto={(uri) => onChangeData({ soatPhotoUri: uri })}
         error={errors.soatPhotoUri}
         helper="Cargar certificado digital o foto del SOAT"
       />
@@ -101,9 +97,7 @@ export default function DocumentsTabScreen({ formData, vehicleYear, onChangeData
           <PhotoPickerField
             label="Foto del certificado de Técnico-Mecánica*"
             uri={formData.tecnoPhotoUri}
-            onPickPhoto={() => {
-              onChangeData({ tecnoPhotoUri: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=300' });
-            }}
+            onPickPhoto={(uri) => onChangeData({ tecnoPhotoUri: uri })}
             error={errors.tecnoPhotoUri}
             helper="Foto del certificado de revisión"
           />

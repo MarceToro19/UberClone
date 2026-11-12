@@ -93,9 +93,7 @@ export default function VehicleTabScreen({ formData, onChangeData, isSubmitted }
       <PhotoPickerField
         label="Foto del vehículo con placa visible*"
         uri={formData.vehiclePhotoUri}
-        onPickPhoto={() => {
-          onChangeData({ vehiclePhotoUri: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=400' });
-        }}
+        onPickPhoto={(uri) => onChangeData({ vehiclePhotoUri: uri })}
         error={errors.vehiclePhotoUri}
         helper="Toca para cargar foto donde se distinga la placa"
       />

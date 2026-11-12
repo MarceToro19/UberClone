@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { colors, spacing, radius, typography } from '../theme';
 
 export function FormField({
@@ -62,13 +63,77 @@ export function OptionSelector({ label, options, selectedValue, onSelect, error 
   );
 }
 
-export function PhotoPickerField({ label, uri, onPickPhoto, error, helper = 'Toca para cargar o simular foto' }) {
+export function PhotoPickerField({ label, uri, onPickPhoto, error, helper = 'Toca para cargar o cambiar foto' }) {
+  const openGallery = async () => {
+    try {
+      if (Platform.OS !== 'web') {
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permission.status !== 'granted') {
+          Alert.alert('Permiso requerido', 'Autoriza el acceso a tus fotos para cargar la imagen.');
+          return;
+        }
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri && onPickPhoto) {
+        onPickPhoto(result.assets[0].uri);
+      }
+    } catch (err) {
+      console.warn('Error seleccionando imagen:', err.message);
+    }
+  };
+
+  const openCamera = async () => {
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (permission.status !== 'granted') {
+        Alert.alert('Permiso requerido', 'Autoriza el acceso a la cámara para tomar la foto.');
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri && onPickPhoto) {
+        onPickPhoto(result.assets[0].uri);
+      }
+    } catch (err) {
+      console.warn('Error abriendo cámara:', err.message);
+    }
+  };
+
+  const handlePress = () => {
+    if (Platform.OS === 'web') {
+      openGallery();
+      return;
+    }
+
+    Alert.alert('Seleccionar imagen', 'Elige cómo deseas cargar la foto', [
+      { text: 'Cámara', onPress: openCamera },
+      { text: 'Galería', onPress: openGallery },
+      { text: 'Cancelar', style: 'cancel' },
+    ]);
+  };
+
   return (
     <View style={styles.fieldContainer}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity style={[styles.photoBox, error ? styles.inputError : null]} onPress={onPickPhoto} activeOpacity={0.7}>
+      <TouchableOpacity style={[styles.photoBox, error ? styles.inputError : null]} onPress={handlePress} activeOpacity={0.7}>
         {uri ? (
-          <Image source={{ uri }} style={styles.photoPreview} resizeMode="cover" />
+          <>
+            <Image source={{ uri }} style={styles.photoPreview} resizeMode="cover" />
+            <View style={styles.changePhotoBadge}>
+              <Ionicons name="camera-outline" size={14} color={colors.blanco} />
+              <Text style={styles.changePhotoText}>Cambiar foto</Text>
+            </View>
+          </>
         ) : (
           <View style={styles.photoPlaceholder}>
             <Ionicons name="camera-outline" size={28} color={colors.primario} />
@@ -176,5 +241,24 @@ const styles = StyleSheet.create({
     color: colors.textoSuave,
     fontSize: 12,
     marginTop: 6,
+  },
+  changePhotoBadge: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.primario,
+  },
+  changePhotoText: {
+    color: colors.blanco,
+    fontSize: 11,
+    fontWeight: '700',
   },
 });

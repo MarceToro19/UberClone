@@ -354,3 +354,25 @@ Archivos y commit: src/data/mockTripRequests.js, src/screens/HomeScreen.js, src/
 Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
 
 Aprendizaje: En cobros en efectivo el conductor recibe el total en mano (conservando su ganancia neta) y la app descuenta el 20% de comisión de su saldo interno según la Sección 6 del PDF.
+
+Entrada #17
+
+Fecha: 2026-11-11
+
+Integrante: Marcela
+
+Herramienta: Gemini
+
+Objetivo: Permitir la selección real de imágenes desde galería/archivos (Web) y cámara/galería (móvil) en los 5 campos de fotografía del registro para su subida a Cloudinary.
+
+Prompt: "aun no me permite cambiar las iamganes al llenar el formulario"
+
+Resumen de la respuesta: Se instaló `expo-image-picker` compatible con Expo SDK 54, se centralizó la selección de cámara/galería en `PhotoPickerField` dentro de `src/components/FormComponents.js` con insignia visible de "Cambiar foto", y se conectaron las 3 pestañas (`PersonalTabScreen.js`, `VehicleTabScreen.js`, `DocumentsTabScreen.js`) para actualizar el URI real seleccionado y subirlo a Cloudinary al enviar el registro.
+
+Qué se usó / modificó / descartó: Se centralizó el selector de imágenes directamente dentro de `PhotoPickerField` para evitar duplicar lógica de permisos y picker en las 3 pantallas de registro.
+
+Archivos y commit: package.json, package-lock.json, src/components/FormComponents.js, src/screens/register/PersonalTabScreen.js, src/screens/register/VehicleTabScreen.js, src/screens/register/DocumentsTabScreen.js, docs/AI_LOG.md — Commit feat habilitar carga real de fotos con expo-image-picker y Cloudinary.
+
+Verificación: Compilación verificada con Metro Bundler (`npx expo export --platform web`).
+
+Aprendizaje: Centralizar `expo-image-picker` dentro del componente reutilizable `PhotoPickerField` mantiene el código DRY y garantiza el mismo comportamiento multiplataforma (Web, Android e iOS).
